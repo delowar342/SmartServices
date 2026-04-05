@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartServices — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F1923;--ink-2:#2C3E50;--ink-3:#4A5568;--ink-4:#718096;--gold:#B8860B;--gold-2:#D4A017;--gold-3:#F5E6C0;--gold-4:#FBF5E8;--cream:#FAFAF7;--white:#FFFFFF;--off:#F4F2ED;--border:#E8E4DC;--border-2:#D4CFC4;--green:#1A6B47;--green-2:#E8F5EE;--green-3:#D1EDDF;--red:#9B2335;--red-2:#FDEAEC;--blue:#1A4A8A;--blue-2:#EAF0FB;--amber:#C27B2A;--amber-2:#FFF3E0;--font-d:'Fraunces',serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-b);background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-logo{padding:1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sb-name{font-family:var(--font-d);font-size:17px;font-weight:600;color:var(--white)}
+.sb-name span{color:var(--gold-2)}
+.sb-sub{font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--font-m);margin-top:2px}
+.sb-nav{flex:1;padding:0.75rem;overflow-y:auto}
+.sb-sec{font-size:9px;font-family:var(--font-m);letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:0 8px;margin:12px 0 4px}
+.sb-item{display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;transition:all 0.18s;text-align:left;font-family:var(--font-b)}
+.sb-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
+.sb-item.active{background:rgba(212,160,23,0.12);color:var(--gold-2)}
+.sb-ico{width:16px;text-align:center;font-size:14px;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;font-family:var(--font-m)}
+.sb-badge-red{background:var(--red);color:var(--white)}
+.sb-badge-gold{background:rgba(212,160,23,0.2);color:var(--gold-2)}
+.sb-footer{padding:0.75rem;border-top:1px solid rgba(255,255,255,0.06)}
+.sb-role{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px}
+.sb-role-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-2);flex-shrink:0}
+.sb-role-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.8)}
+.sb-role-type{font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--font-m)}
+.main{margin-left:220px;flex:1;background:var(--cream)}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-title{font-family:var(--font-d);font-size:17px;font-weight:400;color:var(--ink)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-chip{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:100px;background:var(--green-2);border:1px solid var(--green-3);font-size:11px;color:var(--green);font-weight:500}
+.tb-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.content{padding:1.5rem;max-width:1200px}
+.view{display:none}.view.active{display:block}
+/* ALERT SYSTEM - the key UX improvement */
+.alert-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.alert-card{border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s var(--ease);border:1px solid transparent}
+.alert-card:hover{transform:translateY(-2px)}
+.ac-red{background:var(--red-2);border-color:#F5B8C0}
+.ac-amber{background:var(--amber-2);border-color:#F5D6A0}
+.ac-green{background:var(--green-2);border-color:var(--green-3)}
+.alert-icon{font-size:22px;flex-shrink:0}
+.alert-num{font-family:var(--font-d);font-size:1.8rem;font-weight:600;line-height:1}
+.ac-red .alert-num{color:var(--red)}
+.ac-amber .alert-num{color:var(--amber)}
+.ac-green .alert-num{color:var(--green)}
+.alert-label{font-size:12px;font-weight:600;margin-top:2px}
+.ac-red .alert-label{color:var(--red)}
+.ac-amber .alert-label{color:var(--amber)}
+.ac-green .alert-label{color:var(--green)}
+.alert-desc{font-size:11px;opacity:0.7}
+/* Metrics */
+.metrics{display:grid;gap:1rem;margin-bottom:1.25rem}
+.m4{grid-template-columns:repeat(4,1fr)}.m3{grid-template-columns:repeat(3,1fr)}.m2{grid-template-columns:1fr 1fr}
+.metric{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.1rem}
+.ml{font-size:10px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px}
+.mv{font-family:var(--font-d);font-size:1.8rem;font-weight:400;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.ms{font-size:11px;color:var(--ink-4);margin-top:4px}
+.mp{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;margin-top:5px;font-family:var(--font-m)}
+.mp-green{background:var(--green-2);color:var(--green)}.mp-red{background:var(--red-2);color:var(--red)}.mp-gold{background:var(--gold-4);color:var(--gold)}.mp-blue{background:var(--blue-2);color:var(--blue)}
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.g21{display:grid;grid-template-columns:1.5fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+/* Card */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;margin-bottom:1.25rem}
+.ch{padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:13px;font-weight:600;color:var(--ink)}
+.ca{font-size:12px;color:var(--gold);background:none;border:none;cursor:pointer;font-weight:500;font-family:var(--font-b)}
+.cb{padding:1.25rem}
+/* Badge */
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
+.b-green{background:var(--green-2);color:var(--green)}.b-red{background:var(--red-2);color:var(--red)}.b-amber{background:var(--amber-2);color:var(--amber)}.b-blue{background:var(--blue-2);color:var(--blue)}.b-gold{background:var(--gold-4);color:var(--gold)}.b-ink{background:rgba(15,25,35,0.07);color:var(--ink-2)}
+/* Row */
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.rinfo{flex:1;min-width:0}
+.rname{font-size:13px;font-weight:600;color:var(--ink)}
+.rmeta{font-size:11px;color:var(--ink-4);margin-top:1px}
+.ramt{font-family:var(--font-m);font-size:12px;color:var(--ink);flex-shrink:0;margin-left:8px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:12px;font-weight:600;flex-shrink:0}
+/* Chart */
+.chart{display:flex;align-items:flex-end;gap:5px;height:120px;padding:0 2px}
+.cbar{flex:1;border-radius:3px 3px 0 0;opacity:0.85;transition:opacity 0.2s;min-height:4px}
+.cbar:hover{opacity:1}
+.cb-gold{background:linear-gradient(180deg,var(--gold-2),var(--gold-3))}
+.clabels{display:flex;justify-content:space-around;margin-top:5px;font-size:9px;color:var(--ink-4);font-family:var(--font-m)}
+/* Pbar */
+.pbar{height:5px;background:var(--off);border-radius:3px;margin-top:4px;overflow:hidden}
+.pfill{height:100%;border-radius:3px}
+.pf-gold{background:var(--gold-2)}.pf-green{background:var(--green)}.pf-red{background:var(--red)}.pf-blue{background:var(--blue)}
+/* Timeline dispatch */
+.dispatch-card{border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:8px;position:relative;overflow:hidden}
+.dispatch-card.urgent{border-color:#F5B8C0;background:linear-gradient(135deg,var(--red-2),var(--white))}
+.dispatch-card.urgent::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.dispatch-card.standard{border-color:#F5D6A0}
+.dispatch-card.standard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+.dc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.dc-id{font-family:var(--font-m);font-size:10px;color:var(--ink-4)}
+.dc-title{font-size:13px;font-weight:600;color:var(--ink)}
+.dc-meta{font-size:11px;color:var(--ink-4);margin-top:2px}
+.dc-actions{display:flex;gap:6px;align-items:center;margin-top:10px}
+.btn-assign{padding:6px 14px;background:var(--green);color:var(--white);border:none;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-b)}
+.btn-reject{padding:6px 12px;background:transparent;color:var(--ink-3);border:1px solid var(--border);border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--font-b)}
+.form-select-sm{flex:1;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:var(--font-b);color:var(--ink);background:var(--white);outline:none}
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-family:var(--font-m);font-size:9px;color:var(--ink-4);text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:var(--off)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--off)}
+/* Form */
+.fi{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:var(--font-b);color:var(--ink);background:var(--white);outline:none;transition:border-color 0.2s}
+.fi:focus{border-color:var(--gold-2)}
+.fl{display:block;font-size:11px;font-weight:600;color:var(--ink);margin-bottom:5px;letter-spacing:0.02em}
+.fg{margin-bottom:12px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+/* Perm table */
+.perm-check{color:var(--green);font-size:16px;font-weight:700}
+.perm-cross{color:var(--border-2);font-size:16px}
+/* Collection card */
+.col-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--white)}
+.col-time{font-family:var(--font-m);font-size:11px;color:var(--ink);font-weight:600;min-width:55px}
+.col-info{flex:1}
+.col-name{font-size:13px;font-weight:600;color:var(--ink)}
+.col-addr{font-size:11px;color:var(--ink-4)}
+.col-amt{font-family:var(--font-m);font-size:12px;color:var(--green);font-weight:600}
+.staff-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--white)}
+.btn-sm{padding:5px 12px;border-radius:100px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--white);color:var(--ink);cursor:pointer;font-family:var(--font-b)}
+.btn-sm:hover{background:var(--off)}
+.btn-primary-sm{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.btn-primary-sm:hover{background:var(--ink-2)}
+.btn-green-sm{background:var(--green);color:var(--white);border-color:var(--green)}
+.div{height:1px;background:var(--border);margin:8px 0}
+/* Filter bar */
+.filter-bar{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.filter-select{padding:6px 12px;border-radius:100px;font-size:12px;border:1.5px solid var(--border);background:var(--white);color:var(--ink-2);font-family:var(--font-b);cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--gold-2)}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-name">Smart<span>Services</span></div><div class="sb-sub">Admin Control Tower</div></div>
+  <div class="sb-nav">
+    <div class="sb-sec">Operations</div>
+    <button class="sb-item active" onclick="sv('overview',this)"><span class="sb-ico">⊞</span>Overview</button>
+    <button class="sb-item" onclick="sv('dispatch',this)"><span class="sb-ico">◎</span>Dispatch Board <span class="sb-badge sb-badge-red">3</span></button>
+    <button class="sb-item" onclick="sv('accounts',this)"><span class="sb-ico">👥</span>Customer Accounts</button>
+    <button class="sb-item" onclick="sv('catalog',this)"><span class="sb-ico">☰</span>Service Catalog</button>
+    <div class="sb-sec">Finance</div>
+    <button class="sb-item" onclick="sv('billing',this)"><span class="sb-ico">◻</span>Billing & Invoices <span class="sb-badge sb-badge-red">4</span></button>
+    <button class="sb-item" onclick="sv('collections',this)"><span class="sb-ico">💵</span>Cash Collections</button>
+    <button class="sb-item" onclick="sv('analytics',this)"><span class="sb-ico">▲</span>Analytics</button>
+    <div class="sb-sec">HR & Staff</div>
+    <button class="sb-item" onclick="sv('staff',this)"><span class="sb-ico">👤</span>Staff Management</button>
+    <button class="sb-item" onclick="sv('inventory',this)"><span class="sb-ico">📦</span>Inventory</button>
+    <div class="sb-sec">Admin</div>
+    <button class="sb-item" onclick="sv('roles',this)"><span class="sb-ico">🔑</span>Roles & Permissions</button>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-role"><div class="sb-role-dot"></div><div><div class="sb-role-name">Super Admin</div><div class="sb-role-type">Full Access</div></div></div>
+  </div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tb-title">Overview</div>
+    <div class="tb-right">
+      <div class="tb-chip"><div class="tb-chip-dot"></div>System Online</div>
+      <div style="font-size:12px;color:var(--ink-4);font-family:var(--font-m)">Sun 22 Jun 2025</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div id="v-overview" class="view active">
+      <div class="alert-strip">
+        <div class="alert-card ac-red" onclick="sv('dispatch',null)">
+          <div class="alert-icon">🚨</div>
+          <div><div class="alert-num">3</div><div class="alert-label">Unassigned Jobs</div><div class="alert-desc">Need technician now</div></div>
+        </div>
+        <div class="alert-card ac-amber" onclick="sv('billing',null)">
+          <div class="alert-icon">⚠️</div>
+          <div><div class="alert-num">৳84,200</div><div class="alert-label">Outstanding Invoices</div><div class="alert-desc">12 customers unpaid</div></div>
+        </div>
+        <div class="alert-card ac-green" onclick="sv('collections',null)">
+          <div class="alert-icon">✓</div>
+          <div><div class="alert-num">11</div><div class="alert-label">Jobs Completed Today</div><div class="alert-desc">5 cash collections scheduled</div></div>
+        </div>
+      </div>
+      <div class="metrics m4">
+        <div class="metric"><div class="ml">Revenue Today</div><div class="mv" style="font-size:1.5rem">৳38,400</div><span class="mp mp-green">↑ 12% vs avg</span></div>
+        <div class="metric"><div class="ml">Active Jobs</div><div class="mv">14</div><div class="ms">8 busy · 3 available · 3 unassigned</div></div>
+        <div class="metric"><div class="ml">Unpaid Invoices</div><div class="mv" style="font-size:1.4rem;color:var(--red)">৳84,200</div><span class="mp mp-red">12 customers</span></div>
+        <div class="metric"><div class="ml">Collections Today</div><div class="mv">5</div><span class="mp mp-blue">Scheduled</span></div>
+      </div>
+      <div class="g21">
+        <div class="card">
+          <div class="ch"><div class="ct">Revenue — Last 7 Days</div><button class="ca">This Month</button></div>
+          <div class="cb">
+            <div style="font-family:var(--font-d);font-size:1.6rem;font-weight:400;color:var(--ink);margin-bottom:2px">৳2,84,500</div>
+            <div style="font-size:11px;color:var(--green);margin-bottom:1rem">↑ 18% vs last week</div>
+            <div class="chart">
+              <div class="cbar cb-gold" style="height:60%"></div><div class="cbar cb-gold" style="height:78%"></div><div class="cbar cb-gold" style="height:52%"></div><div class="cbar cb-gold" style="height:88%"></div><div class="cbar cb-gold" style="height:68%"></div><div class="cbar cb-gold" style="height:82%"></div><div class="cbar cb-gold" style="height:100%"></div>
+            </div>
+            <div class="clabels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+            <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:8px">
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">AC Servicing</span><span style="font-family:var(--font-m);color:var(--gold)">৳98,200</span></div><div class="pbar"><div class="pfill pf-gold" style="width:78%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">Deep Cleaning</span><span style="font-family:var(--font-m);color:var(--gold)">৳72,500</span></div><div class="pbar"><div class="pfill pf-gold" style="width:57%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">FM Contracts</span><span style="font-family:var(--font-m);color:var(--gold)">৳65,000</span></div><div class="pbar"><div class="pfill pf-gold" style="width:52%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">Security</span><span style="font-family:var(--font-m);color:var(--gold)">৳48,800</span></div><div class="pbar"><div class="pfill pf-gold" style="width:38%"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="ch"><div class="ct">Unpaid — Action Needed</div><button class="ca" onclick="sv('billing',null)">All →</button></div>
+            <div class="cb">
+              <div class="row"><div class="rinfo"><div class="rname">Baridhara Society</div><div class="rmeta">Building · June invoice · 3 days overdue</div></div><div class="ramt" style="color:var(--red)">৳48,000</div></div>
+              <div class="row"><div class="rinfo"><div class="rname">Rashida Khanam</div><div class="rmeta">Individual · AC Servicing · Today</div></div><div class="ramt" style="color:var(--red)">৳1,200</div></div>
+              <div class="row"><div class="rinfo"><div class="rname">Apex Ventures</div><div class="rmeta">Building · FM Contract · 1 day overdue</div></div><div class="ramt" style="color:var(--red)">৳28,000</div></div>
+              <div class="row"><div class="rinfo"><div class="rname">Nadia Rahman</div><div class="rmeta">Individual · Pest Control · Cash scheduled</div></div><div class="ramt" style="color:var(--amber)">৳2,200</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Technician Status</div><button class="ca" onclick="sv('dispatch',null)">Dispatch →</button></div>
+            <div class="cb" style="padding:0.75rem 1rem">
+              <div class="row"><div class="avatar">KA</div><div class="rinfo"><div class="rname">Karim Ahmed</div><div class="rmeta">AC · Baridhara</div></div><span class="badge b-amber">Busy</span></div>
+              <div class="row"><div class="avatar">SI</div><div class="rinfo"><div class="rname">Sumaiya Islam</div><div class="rmeta">Cleaning · Gulshan 2</div></div><span class="badge b-amber">Busy</span></div>
+              <div class="row"><div class="avatar">RM</div><div class="rinfo"><div class="rname">Rafiq Mia</div><div class="rmeta">Available</div></div><span class="badge b-green">Free</span></div>
+              <div class="row"><div class="avatar">JH</div><div class="rinfo"><div class="rname">Jahid Hassan</div><div class="rmeta">Available</div></div><span class="badge b-green">Free</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPATCH -->
+    <div id="v-dispatch" class="view">
+      <div class="g2">
+        <div>
+          <div class="card">
+            <div class="ch"><div class="ct">Pending Requests</div><span class="badge b-red">3 need assignment</span></div>
+            <div class="cb">
+              <div class="dispatch-card urgent">
+                <div class="dc-header"><div><div class="dc-id">#SS-2025-0849</div><div class="dc-title">AC Repair — Office Not Cooling</div><div class="dc-meta">Apex Ventures · Gulshan 1 · ASAP · Urgent</div></div><span class="badge b-red">Urgent</span></div>
+                <div class="dc-actions"><select class="form-select-sm"><option>Assign technician…</option><option>Rafiq Mia (Available)</option><option>Jahid Hassan (Available)</option></select><button class="btn-assign">Assign →</button><button class="btn-reject">Reject</button></div>
+              </div>
+              <div class="dispatch-card standard">
+                <div class="dc-header"><div><div class="dc-id">#SS-2025-0850</div><div class="dc-title">Pest Control — Full Apartment</div><div class="dc-meta">Nadia Rahman · Mohammadpur · Tomorrow AM</div></div><span class="badge b-amber">Standard</span></div>
+                <div class="dc-actions"><select class="form-select-sm"><option>Assign technician…</option><option>Rafiq Mia (Available)</option><option>Jahid Hassan (Available)</option></select><button class="btn-assign">Assign →</button><button class="btn-reject">Reject</button></div>
+              </div>
+              <div class="dispatch-card standard">
+                <div class="dc-header"><div><div class="dc-id">#SS-2025-0851</div><div class="dc-title">Deep Cleaning — 3BR Apartment</div><div class="dc-meta">Kamal Hossain · Uttara · 25 Jun</div></div><span class="badge b-amber">Standard</span></div>
+                <div class="dc-actions"><select class="form-select-sm"><option>Assign technician…</option><option>Sumaiya Islam (Available 5pm)</option></select><button class="btn-assign">Assign →</button><button class="btn-reject">Reject</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Live Technician Board</div></div>
+          <div class="cb" style="padding:0.75rem 1rem">
+            <div class="staff-row"><div class="avatar">KA</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Karim Ahmed</div><div style="font-size:11px;color:var(--ink-4)">AC · Baridhara · ETA 4pm</div></div><span class="badge b-amber">Busy</span></div>
+            <div class="staff-row"><div class="avatar">SI</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Sumaiya Islam</div><div style="font-size:11px;color:var(--ink-4)">Cleaning · Gulshan 2 · ETA 5pm</div></div><span class="badge b-amber">Busy</span></div>
+            <div class="staff-row" style="border:1.5px solid var(--green-3);background:var(--green-2)"><div class="avatar" style="background:var(--green);color:var(--white)">RM</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Rafiq Mia</div><div style="font-size:11px;color:var(--green)">Available now · Zone A</div></div><span class="badge b-green">Free</span></div>
+            <div class="staff-row"><div class="avatar">AH</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Alam Hossain</div><div style="font-size:11px;color:var(--ink-4)">Electrical · Dhanmondi</div></div><span class="badge b-amber">Busy</span></div>
+            <div class="staff-row" style="border:1.5px solid var(--green-3);background:var(--green-2)"><div class="avatar" style="background:var(--green);color:var(--white)">JH</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Jahid Hassan</div><div style="font-size:11px;color:var(--green)">Available now · Zone B</div></div><span class="badge b-green">Free</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div id="v-accounts" class="view">
+      <div class="metrics m3" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Building Accounts</div><div class="mv">24</div><span class="mp mp-blue">Active</span></div>
+        <div class="metric"><div class="ml">Individual Accounts</div><div class="mv">1,240</div><span class="mp mp-green">Active</span></div>
+        <div class="metric"><div class="ml">New This Month</div><div class="mv">38</div><span class="mp mp-gold">↑ Growing</span></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">All Accounts</div><div style="display:flex;gap:6px"><select class="form-select-sm" style="width:auto"><option>All Types</option><option>Building</option><option>Individual</option></select><button class="btn-assign" style="padding:5px 14px;font-size:11px">+ New Account</button></div></div>
+        <div class="cb" style="padding:0"><table class="tbl">
+          <tr><th>Account Name</th><th>Type</th><th>Location</th><th>Services</th><th>Custom Price</th><th>Monthly</th><th>Status</th><th></th></tr>
+          <tr><td><strong>Baridhara Society</strong></td><td><span class="badge b-blue">Building</span></td><td>Baridhara</td><td>Security, Cleaning, Pest</td><td><span class="badge b-gold">Custom</span></td><td style="font-family:var(--font-m)">৳48,000</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">Manage</button></td></tr>
+          <tr><td><strong>Apex Ventures Ltd</strong></td><td><span class="badge b-blue">Building</span></td><td>Gulshan 1</td><td>FM, Security, AC</td><td><span class="badge b-gold">Custom</span></td><td style="font-family:var(--font-m)">৳65,000</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">Manage</button></td></tr>
+          <tr><td><strong>Rashida Khanam</strong></td><td><span class="badge b-ink">Individual</span></td><td>Baridhara</td><td>AC, Cleaning</td><td><span class="badge b-ink">Standard</span></td><td style="font-family:var(--font-m)">৳2,999</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">Manage</button></td></tr>
+          <tr><td><strong>Nordic Residences</strong></td><td><span class="badge b-blue">Building</span></td><td>Gulshan 2</td><td>Maintenance</td><td><span class="badge b-gold">Custom</span></td><td style="font-family:var(--font-m)">৳18,500</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">Manage</button></td></tr>
+          <tr><td><strong>Kamal Hossain</strong></td><td><span class="badge b-ink">Individual</span></td><td>Uttara</td><td>Pest Control</td><td><span class="badge b-ink">Standard</span></td><td style="font-family:var(--font-m)">৳1,800</td><td><span class="badge b-red">Unpaid</span></td><td><button class="btn-sm">Manage</button></td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="v-catalog" class="view">
+      <div class="card">
+        <div class="ch"><div class="ct">Service Catalog</div><button class="btn-assign" style="padding:6px 16px;font-size:12px">+ Add Service</button></div>
+        <div class="cb" style="padding:0"><table class="tbl">
+          <tr><th>Service Name</th><th>Category</th><th>Type</th><th>Base Price</th><th>Duration</th><th>For</th><th>Status</th><th></th></tr>
+          <tr><td><strong>AC Split Unit — Service</strong></td><td>AC</td><td><span class="badge b-ink">Ad-hoc</span></td><td style="font-family:var(--font-m)">৳800</td><td>90 min</td><td>Both</td><td><span class="badge b-green">Live</span></td><td><button class="btn-sm">Edit</button></td></tr>
+          <tr><td><strong>Deep Cleaning — Full Apt</strong></td><td>Cleaning</td><td><span class="badge b-blue">Monthly</span></td><td style="font-family:var(--font-m)">৳2,500</td><td>4 hrs</td><td>Both</td><td><span class="badge b-green">Live</span></td><td><button class="btn-sm">Edit</button></td></tr>
+          <tr><td><strong>Security Guard — 12hr</strong></td><td>Security</td><td><span class="badge b-gold">Contract</span></td><td style="font-family:var(--font-m)">Custom</td><td>12 hr</td><td>Building</td><td><span class="badge b-green">Live</span></td><td><button class="btn-sm">Edit</button></td></tr>
+          <tr><td><strong>Pest Control — Full Unit</strong></td><td>Pest</td><td><span class="badge b-ink">Ad-hoc</span></td><td style="font-family:var(--font-m)">৳1,800</td><td>2 hrs</td><td>Both</td><td><span class="badge b-green">Live</span></td><td><button class="btn-sm">Edit</button></td></tr>
+          <tr><td><strong>Fire Safety Inspection</strong></td><td>Safety</td><td><span class="badge b-gold">Contract</span></td><td style="font-family:var(--font-m)">Custom</td><td>3 hrs</td><td>Building</td><td><span class="badge b-green">Live</span></td><td><button class="btn-sm">Edit</button></td></tr>
+          <tr><td><strong>Plumbing — Emergency</strong></td><td>Plumbing</td><td><span class="badge b-ink">Ad-hoc</span></td><td style="font-family:var(--font-m)">৳600</td><td>60 min</td><td>Both</td><td><span class="badge b-amber">Draft</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- BILLING -->
+    <div id="v-billing" class="view">
+      <div class="metrics m4" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Total Outstanding</div><div class="mv" style="font-size:1.3rem;color:var(--red)">৳84,200</div><span class="mp mp-red">12 unpaid</span></div>
+        <div class="metric"><div class="ml">Collected This Month</div><div class="mv" style="font-size:1.3rem;color:var(--green)">৳3.2L</div><span class="mp mp-green">↑ 18%</span></div>
+        <div class="metric"><div class="ml">Auto-sent Invoices</div><div class="mv">84</div><span class="mp mp-blue">This month</span></div>
+        <div class="metric"><div class="ml">Overdue</div><div class="mv" style="color:var(--red)">3</div><span class="mp mp-red">Action needed</span></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Invoice Archive</div><div style="display:flex;gap:6px"><select class="form-select-sm" style="width:auto"><option>All Status</option><option>Unpaid</option><option>Paid</option></select><button class="btn-assign" style="padding:5px 12px;font-size:11px">Export PDF</button></div></div>
+        <div class="cb" style="padding:0"><table class="tbl">
+          <tr><th>Invoice</th><th>Customer</th><th>Type</th><th>Amount</th><th>Status</th><th>Payment</th><th></th></tr>
+          <tr style="background:var(--red-2)"><td style="font-family:var(--font-m);font-size:10px">INV-B-001</td><td><strong>Baridhara Society</strong> <span class="badge b-blue" style="font-size:9px">Bldg</span></td><td>Monthly</td><td style="font-family:var(--font-m)">৳48,000</td><td><span class="badge b-red">Overdue</span></td><td>—</td><td><button class="btn-sm btn-primary-sm">Remind</button></td></tr>
+          <tr><td style="font-family:var(--font-m);font-size:10px">INV-B-002</td><td><strong>Apex Ventures</strong> <span class="badge b-blue" style="font-size:9px">Bldg</span></td><td>Monthly</td><td style="font-family:var(--font-m)">৳65,000</td><td><span class="badge b-green">Paid</span></td><td><span class="badge b-ink">Bank</span></td><td><button class="btn-sm">PDF</button></td></tr>
+          <tr style="background:var(--red-2)"><td style="font-family:var(--font-m);font-size:10px">INV-I-847</td><td><strong>Rashida Khanam</strong> <span class="badge b-ink" style="font-size:9px">Ind</span></td><td>Ad-hoc</td><td style="font-family:var(--font-m)">৳1,200</td><td><span class="badge b-red">Unpaid</span></td><td>—</td><td><button class="btn-sm btn-green-sm">Collect</button></td></tr>
+          <tr><td style="font-family:var(--font-m);font-size:10px">INV-I-821</td><td><strong>Nadia Rahman</strong> <span class="badge b-ink" style="font-size:9px">Ind</span></td><td>Ad-hoc</td><td style="font-family:var(--font-m)">৳2,200</td><td><span class="badge b-amber">Cash Scheduled</span></td><td>2pm today</td><td><button class="btn-sm">View</button></td></tr>
+          <tr><td style="font-family:var(--font-m);font-size:10px">INV-B-003</td><td><strong>Nordic Residences</strong> <span class="badge b-blue" style="font-size:9px">Bldg</span></td><td>Monthly</td><td style="font-family:var(--font-m)">৳18,500</td><td><span class="badge b-green">Paid</span></td><td><span class="badge b-blue">bKash</span></td><td><button class="btn-sm">PDF</button></td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- COLLECTIONS -->
+    <div id="v-collections" class="view">
+      <div class="metrics m3" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Scheduled Today</div><div class="mv">5</div><span class="mp mp-blue">Collections</span></div>
+        <div class="metric"><div class="ml">Collected Today</div><div class="mv" style="color:var(--green)">৳14,800</div><span class="mp mp-green">3 done</span></div>
+        <div class="metric"><div class="ml">Remaining</div><div class="mv" style="color:var(--amber)">৳51,500</div><span class="mp mp-gold">2 pending</span></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">Today's Schedule</div></div>
+          <div class="cb" style="padding:0.75rem">
+            <div class="col-card" style="border-color:var(--green-3);background:var(--green-2)"><div class="col-time">9:00 AM</div><div class="col-info"><div class="col-name">Rashida Khanam</div><div class="col-addr">Apt 4B, Baridhara</div></div><div class="col-amt">৳1,200</div><span class="badge b-green">Done ✓</span></div>
+            <div class="col-card" style="border-color:var(--green-3);background:var(--green-2)"><div class="col-time">11:00 AM</div><div class="col-info"><div class="col-name">Kamal Hossain</div><div class="col-addr">House 12, Uttara</div></div><div class="col-amt">৳8,500</div><span class="badge b-green">Done ✓</span></div>
+            <div class="col-card" style="border-color:#F5D6A0;background:var(--amber-2)"><div class="col-time">2:00 PM</div><div class="col-info"><div class="col-name">Nadia Rahman</div><div class="col-addr">Apt 6C, Mohammadpur</div></div><div class="col-amt">৳2,200</div><span class="badge b-amber">En Route</span></div>
+            <div class="col-card"><div class="col-time">4:00 PM</div><div class="col-info"><div class="col-name">Baridhara Society</div><div class="col-addr">Road 11, Baridhara</div></div><div class="col-amt">৳48,000</div><span class="badge b-blue">Scheduled</span></div>
+            <div class="col-card"><div class="col-time">5:30 PM</div><div class="col-info"><div class="col-name">Mizanur Rahman</div><div class="col-addr">Flat 3A, Dhanmondi</div></div><div class="col-amt">৳3,500</div><span class="badge b-blue">Scheduled</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Collector Status</div></div>
+          <div class="cb" style="padding:0.75rem">
+            <div class="staff-row"><div class="avatar" style="background:var(--green);color:var(--white)">MK</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Mostofa Karim</div><div style="font-size:11px;color:var(--ink-4)">Zone A · 2 jobs today</div></div><span class="badge b-amber">Active</span></div>
+            <div class="staff-row"><div class="avatar" style="background:var(--green);color:var(--white)">RB</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Rina Begum</div><div style="font-size:11px;color:var(--ink-4)">Zone B · 1 job today</div></div><span class="badge b-green">Available</span></div>
+            <div class="staff-row"><div class="avatar" style="background:var(--green);color:var(--white)">TH</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Tanvir Hasan</div><div style="font-size:11px;color:var(--ink-4)">Zone C · 2 jobs today</div></div><span class="badge b-amber">Active</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="v-analytics" class="view">
+      <div class="filter-bar">
+        <select class="filter-select"><option>This Month</option><option>Last Month</option><option>Last 3 Months</option><option>Custom Range</option></select>
+        <select class="filter-select"><option>All Services</option><option>AC Servicing</option><option>Cleaning</option><option>Security</option></select>
+        <select class="filter-select"><option>All Locations</option><option>Gulshan</option><option>Baridhara</option><option>Uttara</option></select>
+        <select class="filter-select"><option>All Account Types</option><option>Building</option><option>Individual</option></select>
+        <button class="btn-assign" style="padding:6px 14px;font-size:11px">Export Excel</button>
+        <button class="btn-reject" style="padding:6px 14px;font-size:11px">Export PDF</button>
+      </div>
+      <div class="metrics m4" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Total Revenue</div><div class="mv" style="font-size:1.3rem">৳12.4L</div><span class="mp mp-green">↑ 18%</span></div>
+        <div class="metric"><div class="ml">Jobs Completed</div><div class="mv">284</div><span class="mp mp-green">↑ 22%</span></div>
+        <div class="metric"><div class="ml">New Customers</div><div class="mv">38</div><span class="mp mp-blue">This month</span></div>
+        <div class="metric"><div class="ml">Avg Job Value</div><div class="mv" style="font-size:1.3rem">৳2,180</div><span class="mp mp-gold">↑ 8%</span></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">Service Performance</div></div>
+          <div class="cb">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">On-time completion</span><span style="font-family:var(--font-m);color:var(--green)">94%</span></div><div class="pbar"><div class="pfill pf-green" style="width:94%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">Customer satisfaction</span><span style="font-family:var(--font-m);color:var(--green)">4.8/5</span></div><div class="pbar"><div class="pfill pf-green" style="width:96%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">First-visit resolution</span><span style="font-family:var(--font-m);color:var(--gold)">87%</span></div><div class="pbar"><div class="pfill pf-gold" style="width:87%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">Collection success rate</span><span style="font-family:var(--font-m);color:var(--green)">96%</span></div><div class="pbar"><div class="pfill pf-green" style="width:96%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">Customer retention</span><span style="font-family:var(--font-m);color:var(--green)">82%</span></div><div class="pbar"><div class="pfill pf-green" style="width:82%"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Payment Method Split</div></div>
+          <div class="cb">
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px"><span style="font-weight:600">bKash / Nagad</span><div style="display:flex;align-items:center;gap:6px"><div style="width:80px;height:5px;background:var(--off);border-radius:3px"><div style="width:52%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-family:var(--font-m);color:var(--ink-4)">52%</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px"><span style="font-weight:600">Cash Collection</span><div style="display:flex;align-items:center;gap:6px"><div style="width:80px;height:5px;background:var(--off);border-radius:3px"><div style="width:28%;height:100%;background:var(--amber);border-radius:3px"></div></div><span style="font-family:var(--font-m);color:var(--ink-4)">28%</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px"><span style="font-weight:600">Card / SSLCommerz</span><div style="display:flex;align-items:center;gap:6px"><div style="width:80px;height:5px;background:var(--off);border-radius:3px"><div style="width:12%;height:100%;background:var(--blue);border-radius:3px"></div></div><span style="font-family:var(--font-m);color:var(--ink-4)">12%</span></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px"><span style="font-weight:600">Bank Transfer</span><div style="display:flex;align-items:center;gap:6px"><div style="width:80px;height:5px;background:var(--off);border-radius:3px"><div style="width:8%;height:100%;background:var(--ink-2);border-radius:3px"></div></div><span style="font-family:var(--font-m);color:var(--ink-4)">8%</span></div></div>
+            </div>
+            <div class="div"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="text-align:center;padding:12px;background:var(--green-2);border-radius:10px"><div style="font-family:var(--font-d);font-size:1.6rem;font-weight:600;color:var(--green)">82%</div><div style="font-size:11px;color:var(--green)">Retention</div></div>
+              <div style="text-align:center;padding:12px;background:var(--gold-4);border-radius:10px"><div style="font-family:var(--font-d);font-size:1.6rem;font-weight:600;color:var(--gold)">2.4×</div><div style="font-size:11px;color:var(--gold)">Repeat Rate</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div id="v-staff" class="view">
+      <div class="metrics m4" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Total Staff</div><div class="mv">48</div></div>
+        <div class="metric"><div class="ml">Technicians</div><div class="mv">32</div><span class="mp mp-green">Active</span></div>
+        <div class="metric"><div class="ml">Security Guards</div><div class="mv">10</div><span class="mp mp-blue">Deployed</span></div>
+        <div class="metric"><div class="ml">Collectors</div><div class="mv">6</div><span class="mp mp-gold">Active</span></div>
+      </div>
+      <div class="g21">
+        <div class="card">
+          <div class="ch"><div class="ct">Staff Registry</div><div style="display:flex;gap:6px"><select class="form-select-sm" style="width:auto"><option>All Roles</option><option>Technician</option><option>Security</option><option>Collector</option></select><button class="btn-assign" style="padding:5px 12px;font-size:11px">+ Onboard Staff</button></div></div>
+          <div class="cb" style="padding:0"><table class="tbl">
+            <tr><th></th><th>Name</th><th>Role</th><th>NID</th><th>Skills</th><th>Status</th><th></th></tr>
+            <tr><td><div class="avatar">KA</div></td><td><strong>Karim Ahmed</strong></td><td>Technician</td><td style="font-family:var(--font-m);font-size:10px">19••••••••</td><td>AC, Electrical</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+            <tr><td><div class="avatar">SI</div></td><td><strong>Sumaiya Islam</strong></td><td>Cleaner</td><td style="font-family:var(--font-m);font-size:10px">19••••••••</td><td>Cleaning, Maid</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+            <tr><td><div class="avatar">MR</div></td><td><strong>Mostofa Rahim</strong></td><td>Security Guard</td><td style="font-family:var(--font-m);font-size:10px">19••••••••</td><td>Security</td><td><span class="badge b-blue">Deployed</span></td><td><button class="btn-sm">View</button></td></tr>
+            <tr><td><div class="avatar" style="background:var(--green);color:var(--white)">MK</div></td><td><strong>Mostofa Karim</strong></td><td>Collector</td><td style="font-family:var(--font-m);font-size:10px">19••••••••</td><td>Collection</td><td><span class="badge b-green">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Onboard New Staff</div></div>
+          <div class="cb">
+            <div class="fg"><label class="fl">Full Name (as per NID)</label><input class="fi" placeholder="Mohammed Karim Ahmed"></div>
+            <div class="frow">
+              <div class="fg"><label class="fl">Role</label><select class="fi"><option>Technician</option><option>Cleaner</option><option>Security Guard</option><option>Maid</option><option>Cash Collector</option></select></div>
+              <div class="fg"><label class="fl">NID Number</label><input class="fi" placeholder="19-digit NID"></div>
+            </div>
+            <div class="frow">
+              <div class="fg"><label class="fl">Staff Photo</label><input class="fi" type="file" accept="image/*" style="padding:7px"></div>
+              <div class="fg"><label class="fl">NID Document</label><input class="fi" type="file" accept="image/*,.pdf" style="padding:7px"></div>
+            </div>
+            <div class="fg"><label class="fl">Skills</label><select class="fi" multiple style="height:70px"><option>AC Servicing</option><option>Electrical</option><option>Plumbing</option><option>Cleaning</option><option>Security</option></select></div>
+            <button class="btn-assign" style="width:100%;padding:10px;font-size:13px;border-radius:8px">Save Staff Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div id="v-inventory" class="view">
+      <div class="metrics m4" style="margin-bottom:1.25rem">
+        <div class="metric"><div class="ml">Total SKUs</div><div class="mv">142</div></div>
+        <div class="metric"><div class="ml">Low Stock</div><div class="mv" style="color:var(--amber)">8</div><span class="mp mp-gold">Items</span></div>
+        <div class="metric"><div class="ml">Out of Stock</div><div class="mv" style="color:var(--red)">2</div><span class="mp mp-red">Reorder now</span></div>
+        <div class="metric"><div class="ml">Inventory Value</div><div class="mv" style="font-size:1.3rem">৳4.2L</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Parts Catalogue</div><button class="btn-assign" style="padding:5px 14px;font-size:11px">+ Add Part</button></div>
+        <div class="cb" style="padding:0"><table class="tbl">
+          <tr><th>SKU</th><th>Part Name</th><th>Category</th><th>In Stock</th><th>Min</th><th>Level</th><th>Cost</th><th>Status</th></tr>
+          <tr style="background:var(--red-2)"><td style="font-family:var(--font-m);font-size:10px">AC-003</td><td>AC Filter Split 1.5 Ton</td><td><span class="badge b-ink">AC</span></td><td style="color:var(--red);font-weight:700">0</td><td>5</td><td><div class="pbar" style="width:80px"><div class="pfill pf-red" style="width:0%"></div></div></td><td style="font-family:var(--font-m)">৳380</td><td><span class="badge b-red">Out</span></td></tr>
+          <tr style="background:var(--amber-2)"><td style="font-family:var(--font-m);font-size:10px">AC-001</td><td>AC Cleaning Solution 500ml</td><td><span class="badge b-ink">AC</span></td><td>4</td><td>10</td><td><div class="pbar" style="width:80px"><div class="pfill pf-gold" style="width:40%"></div></div></td><td style="font-family:var(--font-m)">৳150</td><td><span class="badge b-amber">Low</span></td></tr>
+          <tr><td style="font-family:var(--font-m);font-size:10px">AC-005</td><td>AC Gas R22</td><td><span class="badge b-ink">AC</span></td><td>18</td><td>5</td><td><div class="pbar" style="width:80px"><div class="pfill pf-green" style="width:90%"></div></div></td><td style="font-family:var(--font-m)">৳1,200</td><td><span class="badge b-green">OK</span></td></tr>
+          <tr style="background:var(--amber-2)"><td style="font-family:var(--font-m);font-size:10px">EL-012</td><td>MCB 20A Siemens</td><td><span class="badge b-blue">Electrical</span></td><td>7</td><td>10</td><td><div class="pbar" style="width:80px"><div class="pfill pf-gold" style="width:35%"></div></div></td><td style="font-family:var(--font-m)">৳420</td><td><span class="badge b-amber">Low</span></td></tr>
+          <tr><td style="font-family:var(--font-m);font-size:10px">EL-018</td><td>Cable 2.5mm (per meter)</td><td><span class="badge b-blue">Electrical</span></td><td>200</td><td>50</td><td><div class="pbar" style="width:80px"><div class="pfill pf-green" style="width:100%"></div></div></td><td style="font-family:var(--font-m)">৳35</td><td><span class="badge b-green">OK</span></td></tr>
+          <tr style="background:var(--amber-2)"><td style="font-family:var(--font-m);font-size:10px">PL-008</td><td>Drain Cleaner 1L</td><td><span class="badge b-green">Plumbing</span></td><td>5</td><td>8</td><td><div class="pbar" style="width:80px"><div class="pfill pf-gold" style="width:30%"></div></div></td><td style="font-family:var(--font-m)">৳220</td><td><span class="badge b-amber">Low</span></td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ROLES -->
+    <div id="v-roles" class="view">
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">Admin Role Hierarchy</div><button class="btn-assign" style="padding:5px 12px;font-size:11px">+ Add Admin User</button></div>
+          <div class="cb">
+            <div style="border:2px solid var(--gold-2);border-radius:12px;padding:1rem;margin-bottom:10px;background:var(--gold-4)">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="avatar" style="background:var(--gold-2);color:var(--ink)">SA</div>
+                <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--ink)">Super Admin</div><div style="font-size:11px;color:var(--ink-3)">Full system access · 1 account only</div></div>
+                <span class="badge b-gold">All Access</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:10px;padding:0.875rem;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="avatar">OA</div>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">Operations Admin</div><div style="font-size:11px;color:var(--ink-4)">Dispatch · Scheduling · Collections</div></div>
+                <span class="badge b-blue">Ops</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:10px;padding:0.875rem;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="avatar">HR</div>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">HR Admin</div><div style="font-size:11px;color:var(--ink-4)">Staff · NID · Documents · Skills</div></div>
+                <span class="badge b-green">HR</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:10px;padding:0.875rem">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="avatar">FA</div>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">Finance Admin</div><div style="font-size:11px;color:var(--ink-4)">Billing · Payments · Reports</div></div>
+                <span class="badge b-amber">Finance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Permission Matrix</div></div>
+          <div class="cb" style="padding:0"><table class="tbl">
+            <tr><th>Feature</th><th>Super</th><th>Ops</th><th>HR</th><th>Finance</th></tr>
+            <tr><td>Service Catalog</td><td class="perm-check">✓</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td></tr>
+            <tr><td>Dispatch & Assign</td><td class="perm-check">✓</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td></tr>
+            <tr><td>Staff Onboarding</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-check">✓</td><td class="perm-cross">—</td></tr>
+            <tr><td>NID & Documents</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-check">✓</td><td class="perm-cross">—</td></tr>
+            <tr><td>Billing & Invoices</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td><td class="perm-check">✓</td></tr>
+            <tr><td>Custom Pricing</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td><td class="perm-check">✓</td></tr>
+            <tr><td>Cash Collections</td><td class="perm-check">✓</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-check">✓</td></tr>
+            <tr><td>Analytics</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td><td class="perm-check">✓</td></tr>
+            <tr><td>Admin Roles</td><td class="perm-check">✓</td><td class="perm-cross">—</td><td class="perm-cross">—</td><td class="perm-cross">—</td></tr>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+var titles={overview:'Overview',dispatch:'Dispatch Board',accounts:'Customer Accounts',catalog:'Service Catalog',billing:'Billing & Invoices',collections:'Cash Collections',analytics:'Analytics & Reports',staff:'Staff Management',inventory:'Inventory Control',roles:'Roles & Permissions'};
+function sv(name,el){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById('v-'+name).classList.add('active');
+  document.getElementById('tb-title').textContent=titles[name]||name;
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
+  if(el)el.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartServices — Customer Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1923;--ink-2:#2C3E50;--ink-3:#4A5568;--ink-4:#718096;
+  --gold:#B8860B;--gold-2:#D4A017;--gold-3:#F5E6C0;--gold-4:#FBF5E8;
+  --cream:#FAFAF7;--white:#FFFFFF;--off:#F4F2ED;
+  --border:#E8E4DC;--border-2:#D4CFC4;
+  --green:#1A6B47;--green-2:#E8F5EE;--green-3:#D1EDDF;
+  --red:#9B2335;--red-2:#FDEAEC;
+  --blue:#1A4A8A;--blue-2:#EAF0FB;
+  --amber:#C27B2A;--amber-2:#FFF3E0;
+  --font-d:'Fraunces',serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --sidebar:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--font-b);background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── LAYOUT ── */
+.app{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform 0.3s var(--ease)}
+.sb-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo-wrap{display:flex;align-items:center;gap:9px;cursor:pointer}
+.sb-logo-mark{width:30px;height:30px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-mark svg{width:16px;height:16px;fill:var(--gold-2)}
+.sb-logo-name{font-family:var(--font-d);font-size:17px;font-weight:600;color:var(--ink)}
+.sb-logo-name span{color:var(--gold)}
+.sb-logo-sub{font-size:10px;color:var(--ink-4);font-family:var(--font-m);margin-top:4px;letter-spacing:0.05em}
+
+.sb-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+.sb-user-inner{display:flex;align-items:center;gap:10px;padding:10px;background:var(--off);border-radius:12px;border:1px solid var(--border)}
+.sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:600;flex-shrink:0}
+.sb-user-name{font-size:13px;font-weight:600;color:var(--ink)}
+.sb-user-type{font-size:10px;color:var(--ink-4);font-family:var(--font-m);margin-top:1px}
+
+.sb-nav{flex:1;padding:1rem 0.75rem;overflow-y:auto}
+.sb-section{font-size:9px;font-family:var(--font-m);letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-4);padding:0 8px;margin:12px 0 4px}
+.sb-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:10px;font-size:13px;font-weight:500;color:var(--ink-3);background:none;border:none;cursor:pointer;transition:all 0.18s;text-align:left;font-family:var(--font-b);position:relative}
+.sb-item:hover{background:var(--off);color:var(--ink)}
+.sb-item.active{background:var(--gold-4);color:var(--gold);border:1px solid var(--gold-3)}
+.sb-item.active .sb-ico{color:var(--gold)}
+.sb-ico{width:18px;text-align:center;font-size:15px;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--red);color:var(--white);font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;font-family:var(--font-m)}
+.sb-badge-gold{background:var(--gold-3);color:var(--gold)}
+
+.sb-bottom{padding:0.75rem;border-top:1px solid var(--border)}
+.sb-status{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:var(--green-2);border:1px solid var(--green-3)}
+.sb-status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse-dot 2s infinite;flex-shrink:0}
+.sb-status-text{font-size:11px;color:var(--green);font-weight:500}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;background:var(--cream)}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-title{font-family:var(--font-d);font-size:18px;font-weight:400;color:var(--ink);letter-spacing:-0.01em}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-notif{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;position:relative;transition:all 0.2s}
+.topbar-notif:hover{background:var(--off)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--white)}
+.topbar-avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:13px;font-weight:600;cursor:pointer}
+
+.content{padding:2rem;max-width:1100px}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ── DASHBOARD ── */
+.dash-hero{background:var(--ink);border-radius:20px;padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.dash-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(212,160,23,0.07)}
+.dash-hero::after{content:'';position:absolute;right:60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(212,160,23,0.04)}
+.dash-hero-content{position:relative;z-index:1}
+.dash-greeting{font-family:var(--font-d);font-size:1.6rem;font-weight:300;color:var(--white);margin-bottom:4px;letter-spacing:-0.02em}
+.dash-greeting em{font-style:italic;color:var(--gold-2)}
+.dash-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:1.5rem}
+.dash-book-btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold-2);color:var(--ink);padding:12px 24px;border-radius:100px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.2s var(--ease)}
+.dash-book-btn:hover{background:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,160,23,0.3)}
+.dash-book-btn-icon{font-size:18px}
+
+.dash-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.metric{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.25rem}
+.metric-label{font-size:11px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px}
+.metric-value{font-family:var(--font-d);font-size:2rem;font-weight:400;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.metric-sub{font-size:11px;color:var(--ink-4);margin-top:5px}
+.metric-pill{display:inline-block;font-size:10px;padding:3px 9px;border-radius:100px;margin-top:6px;font-family:var(--font-m)}
+.mp-green{background:var(--green-2);color:var(--green)}
+.mp-red{background:var(--red-2);color:var(--red)}
+.mp-gold{background:var(--gold-4);color:var(--gold)}
+.mp-blue{background:var(--blue-2);color:var(--blue)}
+
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--ink)}
+.card-action{font-size:12px;color:var(--gold);background:none;border:none;cursor:pointer;font-weight:500;font-family:var(--font-b)}
+.card-body{padding:1.25rem}
+
+/* Job row */
+.job-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.job-row:last-child{border-bottom:none}
+.job-ico{width:38px;height:38px;border-radius:10px;background:var(--gold-4);border:1px solid var(--gold-3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.job-info{flex:1;min-width:0}
+.job-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-meta{font-size:11px;color:var(--ink-4);margin-top:2px}
+.job-badge{font-size:10px;font-family:var(--font-m);padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.jb-active{background:var(--amber-2);color:var(--amber)}
+.jb-done{background:var(--green-2);color:var(--green)}
+.jb-scheduled{background:var(--blue-2);color:var(--blue)}
+.job-amt{font-family:var(--font-m);font-size:12px;color:var(--ink);margin-left:8px;white-space:nowrap;flex-shrink:0}
+
+/* Upcoming visit card */
+.visit-card{background:linear-gradient(135deg,var(--gold-4),var(--cream));border:1px solid var(--gold-3);border-radius:14px;padding:1rem;margin-bottom:10px}
+.visit-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.visit-avatar{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:16px;font-weight:600;flex-shrink:0;border:2px solid var(--gold-3)}
+.visit-name{font-size:13px;font-weight:600;color:var(--ink)}
+.visit-role{font-size:11px;color:var(--ink-4);margin-top:1px}
+.visit-verified{font-size:11px;color:var(--green);margin-top:3px;display:flex;align-items:center;gap:4px}
+.visit-time{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.visit-time-icon{font-size:14px}
+
+/* Invoice alert */
+.invoice-alert{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:10px}
+.invoice-alert-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.invoice-amount{font-family:var(--font-d);font-size:1.8rem;font-weight:400;color:var(--ink);letter-spacing:-0.02em}
+.invoice-label{font-size:11px;color:var(--ink-4);font-family:var(--font-m)}
+.invoice-badge{font-size:10px;background:var(--red-2);color:var(--red);padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
+.btn-pay{width:100%;padding:11px;border-radius:100px;background:var(--ink);color:var(--white);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-bottom:6px}
+.btn-pay:hover{background:var(--ink-2)}
+.btn-cash{width:100%;padding:11px;border-radius:100px;background:transparent;color:var(--ink-2);font-size:13px;font-weight:500;border:1px solid var(--border);cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
+.btn-cash:hover{border-color:var(--ink)}
+
+/* Quick services */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick-card{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:all 0.2s var(--ease)}
+.quick-card:hover{background:var(--gold-4);border-color:var(--gold-3);transform:translateY(-2px)}
+.quick-emoji{font-size:20px;display:block;margin-bottom:5px}
+.quick-name{font-size:11px;font-weight:600;color:var(--ink)}
+
+/* ── BOOKING WIZARD ── */
+.wizard{max-width:640px}
+.wizard-progress{display:flex;align-items:center;gap:0;margin-bottom:2rem}
+.wp-step{display:flex;align-items:center;flex:1}
+.wp-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--ink-4);background:var(--white);transition:all 0.3s;flex-shrink:0;font-family:var(--font-m)}
+.wp-circle.done{background:var(--green);border-color:var(--green);color:var(--white)}
+.wp-circle.active{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.wp-line{flex:1;height:2px;background:var(--border);transition:background 0.3s;margin:0 4px}
+.wp-line.done{background:var(--green)}
+.wp-labels{display:flex;justify-content:space-between;margin-top:8px;margin-bottom:2rem}
+.wp-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);text-align:center;flex:1}
+.wp-label.active{color:var(--ink);font-weight:500}
+.wp-label.done{color:var(--green)}
+
+.wizard-step{display:none}
+.wizard-step.active{display:block}
+
+.wizard-title{font-family:var(--font-d);font-size:1.8rem;font-weight:300;color:var(--ink);letter-spacing:-0.02em;margin-bottom:6px}
+.wizard-sub{font-size:14px;color:var(--ink-4);margin-bottom:2rem;line-height:1.6;font-weight:300}
+
+/* Service picker */
+.svc-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.svc-pick-card{border:1.5px solid var(--border);border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.25s var(--ease);text-align:center;background:var(--white)}
+.svc-pick-card:hover{border-color:var(--gold-3);background:var(--gold-4)}
+.svc-pick-card.selected{border-color:var(--gold-2);background:var(--gold-4);box-shadow:0 0 0 3px rgba(212,160,23,0.1)}
+.svc-pick-emoji{font-size:28px;display:block;margin-bottom:8px}
+.svc-pick-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.svc-pick-price{font-size:11px;color:var(--gold);font-family:var(--font-m)}
+
+/* Form */
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;letter-spacing:0.02em}
+.form-input,.form-select,.form-textarea{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:var(--font-b);color:var(--ink);background:var(--white);transition:all 0.2s;outline:none;appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(212,160,23,0.08)}
+.form-textarea{min-height:80px;resize:vertical;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-hint{font-size:11px;color:var(--ink-4);margin-top:5px;line-height:1.5}
+
+/* Time slots */
+.time-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.time-slot{border:1.5px solid var(--border);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white)}
+.time-slot:hover{border-color:var(--gold-3)}
+.time-slot.selected{border-color:var(--gold-2);background:var(--gold-4)}
+.ts-time{font-size:14px;font-weight:600;color:var(--ink)}
+.ts-label{font-size:11px;color:var(--ink-4);font-family:var(--font-m);margin-top:2px}
+
+/* Payment methods */
+.pay-methods{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.5rem}
+.pay-method{border:1.5px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px;background:var(--white)}
+.pay-method:hover{border-color:var(--gold-3)}
+.pay-method.selected{border-color:var(--gold-2);background:var(--gold-4)}
+.pay-method-icon{font-size:24px;flex-shrink:0}
+.pay-method-name{font-size:13px;font-weight:600;color:var(--ink)}
+.pay-method-desc{font-size:11px;color:var(--ink-4);margin-top:1px}
+
+/* Summary */
+.booking-summary{background:var(--off);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1.5rem}
+.bs-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
+.bs-row:last-child{border-bottom:none;font-weight:600;color:var(--ink);font-size:14px;padding-top:10px;margin-top:4px}
+.bs-label{color:var(--ink-4);font-weight:400}
+.bs-value{color:var(--ink);font-family:var(--font-m)}
+
+/* Wizard nav */
+.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-next{padding:13px 28px;background:var(--ink);color:var(--white);border:none;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.btn-next:hover{background:var(--ink-2);transform:translateY(-1px)}
+.btn-next:disabled{background:var(--border);color:var(--ink-4);cursor:not-allowed;transform:none}
+.btn-back-wiz{padding:13px 24px;background:transparent;color:var(--ink-3);border:1.5px solid var(--border);border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
+.btn-back-wiz:hover{border-color:var(--ink-3);color:var(--ink)}
+
+/* Success screen */
+.success-screen{text-align:center;padding:3rem 1rem;display:none}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--green-2);border:2px solid var(--green-3);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:28px;animation:popIn 0.5s var(--ease)}
+.success-title{font-family:var(--font-d);font-size:2rem;font-weight:300;color:var(--ink);margin-bottom:8px;letter-spacing:-0.02em}
+.success-sub{font-size:15px;color:var(--ink-3);margin-bottom:2rem;line-height:1.7;font-weight:300}
+.success-ref{font-family:var(--font-m);font-size:12px;color:var(--ink-4);background:var(--off);display:inline-block;padding:6px 14px;border-radius:100px;margin-bottom:2rem;border:1px solid var(--border)}
+.success-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@keyframes popIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ── TRACKING ── */
+.tracking-hero{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+.tracking-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem}
+.tracking-title{font-family:var(--font-d);font-size:1.3rem;font-weight:400;color:var(--ink);letter-spacing:-0.01em}
+.tracking-ref{font-size:11px;color:var(--ink-4);font-family:var(--font-m);margin-top:3px}
+.tracking-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.25rem}
+
+/* Timeline */
+.timeline{padding-left:1.5rem;position:relative}
+.timeline::before{content:'';position:absolute;left:7px;top:10px;bottom:10px;width:1.5px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:1.25rem}
+.tl-dot{width:16px;height:16px;border-radius:50%;position:absolute;left:-1.5rem;top:2px;border:2px solid var(--white)}
+.tld-done{background:var(--green);box-shadow:0 0 0 3px var(--green-2)}
+.tld-active{background:var(--gold-2);box-shadow:0 0 0 3px var(--gold-3);animation:pulse-dot 1.5s infinite}
+.tld-pending{background:var(--border);box-shadow:0 0 0 3px var(--off)}
+.tl-title{font-size:13px;font-weight:600;color:var(--ink)}
+.tl-time{font-size:11px;color:var(--ink-4);font-family:var(--font-m);margin-top:2px}
+.tl-title-pending{color:var(--ink-4)}
+
+/* Tech card */
+.tech-card{background:var(--off);border:1px solid var(--border);border-radius:14px;padding:1.25rem;text-align:center;margin-bottom:1rem}
+.tech-avatar-lg{width:60px;height:60px;border-radius:50%;background:var(--ink);color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:20px;font-weight:600;margin:0 auto 10px;border:3px solid var(--gold-3)}
+.tech-name{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.tech-role{font-size:12px;color:var(--ink-4)}
+.tech-rating{font-size:12px;color:var(--gold-2);margin-top:4px}
+.tech-verified{font-size:11px;color:var(--green);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+.tech-actions{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.btn-tech{padding:8px 16px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--ink);cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
+.btn-tech:hover{border-color:var(--ink)}
+
+/* Cost estimate */
+.cost-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+.cost-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
+.cost-row:last-child{border-bottom:none;font-weight:600;padding-top:8px;margin-top:4px}
+.cost-label{color:var(--ink-3)}
+.cost-value{font-family:var(--font-m);color:var(--ink)}
+
+/* ── HISTORY ── */
+.history-filters{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.filter-btn{padding:7px 16px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--ink-3);cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
+.filter-btn:hover,.filter-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.history-table{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.ht-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;gap:0;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--off)}
+.ht-col{font-size:10px;font-family:var(--font-m);color:var(--ink-4);text-transform:uppercase;letter-spacing:0.08em}
+.ht-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;cursor:pointer}
+.ht-row:last-child{border-bottom:none}
+.ht-row:hover{background:var(--off)}
+.ht-service{display:flex;align-items:center;gap:10px}
+.ht-emoji{font-size:18px}
+.ht-name{font-size:13px;font-weight:600;color:var(--ink)}
+.ht-date{font-size:11px;color:var(--ink-4);font-family:var(--font-m)}
+.ht-tech{font-size:12px;color:var(--ink-3)}
+.ht-amt{font-family:var(--font-m);font-size:12px;color:var(--ink)}
+.ht-status{font-size:10px;padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
+
+/* ── INVOICES ── */
+.invoice-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+
+/* ── PAYMENTS ── */
+.payment-section-header{margin-bottom:1.5rem}
+.pay-invoice-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.pic-amount{font-family:var(--font-d);font-size:2.5rem;font-weight:300;color:var(--ink);letter-spacing:-0.03em;margin-bottom:4px}
+.pic-desc{font-size:13px;color:var(--ink-4);margin-bottom:1.25rem}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.pay-option{border:1.5px solid var(--border);border-radius:14px;padding:1.25rem}
+.pay-option-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.pay-method-list{display:flex;flex-direction:column;gap:8px}
+.pay-btn-method{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;background:var(--white)}
+.pay-btn-method:hover{border-color:var(--gold-2);background:var(--gold-4)}
+.pay-btn-method.selected{border-color:var(--gold-2);background:var(--gold-4)}
+.pbm-icon{font-size:20px}
+.pbm-name{font-size:13px;font-weight:600;color:var(--ink)}
+
+/* Cash schedule */
+.cash-schedule{background:var(--amber-2);border:1px solid #F5D6A0;border-radius:12px;padding:1rem;font-size:13px;color:var(--amber);margin-bottom:1rem;line-height:1.6}
+.btn-primary-full{width:100%;padding:14px;border-radius:100px;background:var(--ink);color:var(--white);font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:10px}
+.btn-primary-full:hover{background:var(--ink-2)}
+.btn-outline-full{width:100%;padding:14px;border-radius:100px;background:transparent;color:var(--ink-2);font-size:14px;font-weight:500;border:1.5px solid var(--border);cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:8px}
+.btn-outline-full:hover{border-color:var(--ink-2)}
+
+/* ── FEEDBACK ── */
+.feedback-pending{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.fp-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.fp-title{font-size:14px;font-weight:600;color:var(--ink)}
+.fp-date{font-size:11px;color:var(--ink-4);font-family:var(--font-m);margin-top:2px}
+.stars-row{display:flex;gap:6px;margin-bottom:1rem}
+.star-btn{font-size:28px;cursor:pointer;transition:all 0.15s;color:var(--border);line-height:1}
+.star-btn.active{color:var(--gold-2)}
+.star-btn:hover{transform:scale(1.15)}
+.feedback-table{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.ft-row{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center}
+.ft-row:last-child{border-bottom:none}
+.ft-row-header{background:var(--off);padding:10px 16px}
+.ft-stars{color:var(--gold-2);font-size:13px}
+.ft-feedback{font-size:12px;color:var(--ink-3);font-style:italic}
+
+/* ── MOBILE ── */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);padding:6px 8px;z-index:100;gap:0}
+.mbn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:var(--font-b);transition:background 0.2s}
+.mbn-item.active{background:var(--gold-4)}
+.mbn-ico{font-size:20px}
+.mbn-label{font-size:9px;color:var(--ink-4);font-weight:500}
+.mbn-item.active .mbn-label{color:var(--gold)}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:10px 0}
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:500;font-family:var(--font-m)}
+
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.4s var(--ease)}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .dash-metrics{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .tracking-grid{grid-template-columns:1fr}
+  .pay-grid{grid-template-columns:1fr}
+  .svc-picker{grid-template-columns:repeat(2,1fr)}
+  .mobile-bottom-nav{display:flex}
+  .content{padding:1rem;padding-bottom:80px}
+  .topbar{display:flex}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-wrap" onclick="window.location='index.html'">
+        <div class="sb-logo-mark"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22" fill="none" stroke="#D4A017" stroke-width="1.5"/></svg></div>
+        <div>
+          <div class="sb-logo-name">Smart<span>Services</span></div>
+          <div class="sb-logo-sub">Customer Portal</div>
+        </div>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-user-inner">
+        <div class="sb-avatar">RK</div>
+        <div>
+          <div class="sb-user-name">Rashida Khanam</div>
+          <div class="sb-user-type">Individual Account</div>
+        </div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Main</div>
+      <button class="sb-item active" onclick="showView('dashboard',this)"><span class="sb-ico">⊞</span>Dashboard</button>
+      <button class="sb-item" onclick="showView('book',this)"><span class="sb-ico">＋</span>Book a Service</button>
+      <button class="sb-item" onclick="showView('tracking',this)"><span class="sb-ico">◎</span>Track Job <span class="sb-badge">1</span></button>
+      <div class="sb-section">Records</div>
+      <button class="sb-item" onclick="showView('history',this)"><span class="sb-ico">☰</span>Service History</button>
+      <button class="sb-item" onclick="showView('invoices',this)"><span class="sb-ico">◻</span>Invoices <span class="sb-badge">1</span></button>
+      <button class="sb-item" onclick="showView('payment',this)"><span class="sb-ico">💳</span>Payments</button>
+      <button class="sb-item" onclick="showView('feedback',this)"><span class="sb-ico">★</span>Ratings & Feedback <span class="sb-badge-gold sb-badge">2</span></button>
+      <div class="sb-section">Account</div>
+      <button class="sb-item"><span class="sb-ico">⚙</span>Settings</button>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-status">
+        <div class="sb-status-dot"></div>
+        <div class="sb-status-text">Active Subscriber</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="topbar-notif">🔔<div class="notif-dot"></div></div>
+        <div class="topbar-avatar">RK</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="v-dashboard" class="view active fade-in">
+        <div class="dash-hero">
+          <div class="dash-hero-content">
+            <div class="dash-greeting">Good morning, <em>Rashida</em> 👋</div>
+            <div class="dash-sub">1 active job in progress · Next visit tomorrow at 9am</div>
+            <button class="dash-book-btn" onclick="showView('book',null)">
+              <span class="dash-book-btn-icon">＋</span> Book a Service
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-metrics">
+          <div class="metric"><div class="metric-label">Active Jobs</div><div class="metric-value">1</div><span class="metric-pill mp-gold">In Progress</span></div>
+          <div class="metric"><div class="metric-label">This Month</div><div class="metric-value">3</div><div class="metric-sub">services completed</div></div>
+          <div class="metric"><div class="metric-label">Outstanding</div><div class="metric-value" style="font-size:1.5rem">৳1,200</div><span class="metric-pill mp-red">Unpaid</span></div>
+          <div class="metric"><div class="metric-label">Plan</div><div class="metric-value" style="font-size:1.1rem">Active</div><span class="metric-pill mp-green">Home Care</span></div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Jobs</div>
+              <button class="card-action" onclick="showView('history',null)">View all →</button>
+            </div>
+            <div class="card-body">
+              <div class="job-row"><div class="job-ico">❄️</div><div class="job-info"><div class="job-name">AC Servicing — 2 Split Units</div><div class="job-meta">Today · Karim Ahmed</div></div><span class="job-badge jb-active">In Progress</span><div class="job-amt">৳1,200</div></div>
+              <div class="job-row"><div class="job-ico">🧹</div><div class="job-info"><div class="job-name">Deep Cleaning — Full Apartment</div><div class="job-meta">15 Jun · Sumaiya Islam</div></div><span class="job-badge jb-done">Done</span><div class="job-amt">৳3,500</div></div>
+              <div class="job-row"><div class="job-ico">🔧</div><div class="job-info"><div class="job-name">Plumbing — Kitchen Sink</div><div class="job-meta">8 Jun · Rafiq Mia</div></div><span class="job-badge jb-done">Done</span><div class="job-amt">৳850</div></div>
+              <div class="job-row"><div class="job-ico">⚡</div><div class="job-info"><div class="job-name">Electrical — MCB Replacement</div><div class="job-meta">1 Jun · Alam Hossain</div></div><span class="job-badge jb-done">Done</span><div class="job-amt">৳650</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1rem">
+              <div class="card-header"><div class="card-title">Tomorrow's Visit</div></div>
+              <div class="card-body">
+                <div class="visit-card">
+                  <div class="visit-top">
+                    <div class="visit-avatar">KA</div>
+                    <div>
+                      <div class="visit-name">Karim Ahmed</div>
+                      <div class="visit-role">AC Specialist</div>
+                      <div class="visit-verified">✓ Identity verified by SmartServices</div>
+                    </div>
+                  </div>
+                  <div class="visit-time"><span class="visit-time-icon">🕘</span> Tomorrow · 9:00 AM · Apt 4B, Baridhara</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Pay Now</div><button class="card-action" onclick="showView('payment',null)">Details →</button></div>
+              <div class="card-body">
+                <div class="invoice-alert">
+                  <div class="invoice-alert-header">
+                    <div><div class="invoice-amount">৳1,200</div><div class="invoice-label">AC Servicing · Today</div></div>
+                    <div class="invoice-badge">Unpaid</div>
+                  </div>
+                  <button class="btn-pay" onclick="showView('payment',null)">Pay via bKash →</button>
+                  <button class="btn-cash" onclick="showView('payment',null)">Schedule Cash Collection</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Quick Book</div><button class="card-action" onclick="showView('book',null)">All services →</button></div>
+          <div class="card-body">
+            <div class="quick-grid">
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">❄️</span><div class="quick-name">AC Service</div></div>
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">🔧</span><div class="quick-name">Plumbing</div></div>
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">⚡</span><div class="quick-name">Electrical</div></div>
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">🧹</span><div class="quick-name">Cleaning</div></div>
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">🪲</span><div class="quick-name">Pest Control</div></div>
+              <div class="quick-card" onclick="showView('book',null)"><span class="quick-emoji">➕</span><div class="quick-name">More</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BOOK ── -->
+      <div id="v-book" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Book a Service</div>
+          <div style="font-size:13px;color:var(--ink-4)">Our team will review and confirm your request within minutes.</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="wizard-progress" id="wizardProgress">
+          <div class="wp-step"><div class="wp-circle active" id="wc1">1</div><div class="wp-line" id="wl1"></div></div>
+          <div class="wp-step"><div class="wp-circle" id="wc2">2</div><div class="wp-line" id="wl2"></div></div>
+          <div class="wp-step"><div class="wp-circle" id="wc3">3</div><div class="wp-line" id="wl3"></div></div>
+          <div class="wp-step"><div class="wp-circle" id="wc4">4</div></div>
+        </div>
+        <div class="wp-labels">
+          <span class="wp-label active" id="wl-1">Service</span>
+          <span class="wp-label" id="wl-2">Details</span>
+          <span class="wp-label" id="wl-3">Schedule</span>
+          <span class="wp-label" id="wl-4">Confirm</span>
+        </div>
+
+        <div class="wizard" id="wizardContainer">
+          <!-- Step 1 -->
+          <div class="wizard-step active" id="ws-1">
+            <div class="wizard-title">What do you need?</div>
+            <div class="wizard-sub">Choose from our available services. Admin-curated — always up to date.</div>
+            <div class="svc-picker">
+              <div class="svc-pick-card selected" onclick="selectService(this)"><span class="svc-pick-emoji">❄️</span><div class="svc-pick-name">AC Servicing</div><div class="svc-pick-price">From ৳800</div></div>
+              <div class="svc-pick-card" onclick="selectService(this)"><span class="svc-pick-emoji">🔧</span><div class="svc-pick-name">Plumbing</div><div class="svc-pick-price">From ৳600</div></div>
+              <div class="svc-pick-card" onclick="selectService(this)"><span class="svc-pick-emoji">⚡</span><div class="svc-pick-name">Electrical</div><div class="svc-pick-price">From ৳700</div></div>
+              <div class="svc-pick-card" onclick="selectService(this)"><span class="svc-pick-emoji">🧹</span><div class="svc-pick-name">Deep Cleaning</div><div class="svc-pick-price">From ৳2,500</div></div>
+              <div class="svc-pick-card" onclick="selectService(this)"><span class="svc-pick-emoji">🪲</span><div class="svc-pick-name">Pest Control</div><div class="svc-pick-price">From ৳1,800</div></div>
+              <div class="svc-pick-card" onclick="selectService(this)"><span class="svc-pick-emoji">🔥</span><div class="svc-pick-name">Fire Safety</div><div class="svc-pick-price">Custom</div></div>
+            </div>
+            <div class="wizard-nav">
+              <div></div>
+              <button class="btn-next" onclick="nextStep(2)">Choose Service Type →</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="wizard-step" id="ws-2">
+            <div class="wizard-title">Tell us more</div>
+            <div class="wizard-sub">Help us prepare the right technician and parts for your job.</div>
+            <div class="form-group">
+              <label class="form-label">Service Type</label>
+              <select class="form-select">
+                <option>AC Split Unit — Cleaning & Full Service</option>
+                <option>AC Split Unit — Gas Refill</option>
+                <option>AC Window Unit — Service</option>
+                <option>AC — New Installation</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Number of Units</label>
+                <select class="form-select"><option>1 Unit</option><option selected>2 Units</option><option>3 Units</option><option>4+ Units</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Property Type</label>
+                <select class="form-select"><option>Apartment</option><option>Office</option><option>Villa / House</option></select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Service Address</label>
+              <select class="form-select">
+                <option>📍 Apt 4B, Road 11, Baridhara, Dhaka</option>
+                <option>+ Add new address</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Additional Notes <span style="font-weight:300;color:var(--ink-4)">(optional)</span></label>
+              <textarea class="form-textarea" placeholder="E.g. AC making a noise, 3rd floor apartment, please call before arriving…"></textarea>
+              <div class="form-hint">This helps us send the right technician with the right parts.</div>
+            </div>
+            <div class="wizard-nav">
+              <button class="btn-back-wiz" onclick="nextStep(1)">← Back</button>
+              <button class="btn-next" onclick="nextStep(3)">Choose Schedule →</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="wizard-step" id="ws-3">
+            <div class="wizard-title">When works for you?</div>
+            <div class="wizard-sub">Pick your preferred date and time. We'll confirm within minutes via SMS.</div>
+            <div class="form-group">
+              <label class="form-label">Preferred Date</label>
+              <input class="form-input" type="date" value="2025-06-25">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Time</label>
+              <div class="time-slots">
+                <div class="time-slot selected"><div class="ts-time">8–12pm</div><div class="ts-label">Morning</div></div>
+                <div class="time-slot"><div class="ts-time">12–4pm</div><div class="ts-label">Afternoon</div></div>
+                <div class="time-slot"><div class="ts-time">4–7pm</div><div class="ts-label">Evening</div></div>
+              </div>
+            </div>
+            <div style="background:var(--blue-2);border:1px solid #B5CFF4;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--blue);margin-top:1rem;line-height:1.6">
+              📋 Our operations team will review and confirm your booking. You'll get an SMS the moment it's confirmed — usually within 15 minutes.
+            </div>
+            <div class="wizard-nav">
+              <button class="btn-back-wiz" onclick="nextStep(2)">← Back</button>
+              <button class="btn-next" onclick="nextStep(4)">Review & Confirm →</button>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="wizard-step" id="ws-4">
+            <div class="wizard-title">Review & confirm</div>
+            <div class="wizard-sub">Check your booking details before submitting.</div>
+            <div class="booking-summary">
+              <div class="bs-row"><span class="bs-label">Service</span><span class="bs-value">AC Split Unit — Cleaning</span></div>
+              <div class="bs-row"><span class="bs-label">Units</span><span class="bs-value">2 Units</span></div>
+              <div class="bs-row"><span class="bs-label">Address</span><span class="bs-value">Apt 4B, Baridhara</span></div>
+              <div class="bs-row"><span class="bs-label">Date & Time</span><span class="bs-value">25 Jun · Morning</span></div>
+              <div class="bs-row"><span class="bs-label">Bill Type</span><span class="bs-value">Ad-hoc · Invoice on completion</span></div>
+              <div class="bs-row"><span class="bs-label">Estimate</span><span class="bs-value">৳1,200</span></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Method</label>
+              <div class="pay-methods">
+                <div class="pay-method selected"><span class="pay-method-icon">💚</span><div><div class="pay-method-name">bKash</div><div class="pay-method-desc">Pay after job is complete</div></div></div>
+                <div class="pay-method"><span class="pay-method-icon">💵</span><div><div class="pay-method-name">Cash Collection</div><div class="pay-method-desc">We come to collect</div></div></div>
+                <div class="pay-method"><span class="pay-method-icon">💳</span><div><div class="pay-method-name">Card / Bank</div><div class="pay-method-desc">SSLCommerz</div></div></div>
+                <div class="pay-method"><span class="pay-method-icon">🔵</span><div><div class="pay-method-name">Nagad</div><div class="pay-method-desc">Mobile wallet</div></div></div>
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <button class="btn-back-wiz" onclick="nextStep(3)">← Back</button>
+              <button class="btn-next" onclick="submitBooking()" style="background:var(--green);gap:8px">✓ Submit Request</button>
+            </div>
+          </div>
+
+          <!-- Success -->
+          <div class="success-screen" id="successScreen">
+            <div class="success-icon">✓</div>
+            <div class="success-title">Request submitted!</div>
+            <div class="success-sub">Our team is reviewing your request.<br>You'll receive an SMS confirmation within 15 minutes.</div>
+            <div class="success-ref">#SS-2025-0852</div>
+            <div class="success-actions">
+              <button class="btn-next" onclick="showView('tracking',null)" style="background:var(--ink)">Track Your Job →</button>
+              <button class="btn-back-wiz" onclick="showView('dashboard',null)">Back to Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRACKING ── -->
+      <div id="v-tracking" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Job Tracker</div>
+          <div style="font-size:13px;color:var(--ink-4)">Live updates for your active job</div>
+        </div>
+        <div class="tracking-hero">
+          <div class="tracking-header">
+            <div><div class="tracking-title">AC Servicing — 2 Split Units</div><div class="tracking-ref">Job #SS-2025-0847 · Apt 4B, Baridhara</div></div>
+            <span class="tag" style="background:var(--amber-2);color:var(--amber);border:1px solid #F5D6A0;font-size:11px">● In Progress</span>
+          </div>
+          <div class="tracking-grid">
+            <div>
+              <div class="timeline">
+                <div class="tl-item"><div class="tl-dot tld-done"></div><div class="tl-title">Request Submitted</div><div class="tl-time">1:00 PM</div></div>
+                <div class="tl-item"><div class="tl-dot tld-done"></div><div class="tl-title">Admin Confirmed & Assigned Karim Ahmed</div><div class="tl-time">1:08 PM · SMS sent</div></div>
+                <div class="tl-item"><div class="tl-dot tld-done"></div><div class="tl-title">Technician En Route</div><div class="tl-time">2:15 PM · SMS sent</div></div>
+                <div class="tl-item"><div class="tl-dot tld-active"></div><div class="tl-title">Technician Working at Your Home</div><div class="tl-time">2:30 PM · Now</div></div>
+                <div class="tl-item"><div class="tl-dot tld-pending"></div><div class="tl-title tl-title-pending">Job Complete & Invoice Generated</div><div class="tl-time" style="color:var(--ink-4)">Est. 4:00 PM</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="tech-card">
+                <div class="tech-avatar-lg">KA</div>
+                <div class="tech-name">Karim Ahmed</div>
+                <div class="tech-role">AC Specialist</div>
+                <div class="tech-rating">★★★★★ 4.9 · 127 jobs</div>
+                <div class="tech-verified">✓ Identity verified by SmartServices</div>
+                <div class="tech-actions">
+                  <button class="btn-tech">📞 Call</button>
+                  <button class="btn-tech">💬 SMS</button>
+                </div>
+              </div>
+              <div class="cost-card">
+                <div class="card-title" style="margin-bottom:10px">Cost Estimate</div>
+                <div class="cost-row"><span class="cost-label">Labour (2 units)</span><span class="cost-value">৳1,000</span></div>
+                <div class="cost-row"><span class="cost-label">Cleaning solution</span><span class="cost-value">৳150</span></div>
+                <div class="cost-row"><span class="cost-label">Service charge</span><span class="cost-value">৳50</span></div>
+                <div class="cost-row"><span class="cost-label">Total</span><span class="cost-value">৳1,200</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Rate After Completion</div></div>
+          <div class="card-body">
+            <div style="font-size:13px;color:var(--ink-4);margin-bottom:12px">How is your experience so far? You can update this after the job is done.</div>
+            <div class="stars-row">
+              <span class="star-btn active" onclick="rateStar(this,1)">★</span>
+              <span class="star-btn active" onclick="rateStar(this,2)">★</span>
+              <span class="star-btn active" onclick="rateStar(this,3)">★</span>
+              <span class="star-btn active" onclick="rateStar(this,4)">★</span>
+              <span class="star-btn" onclick="rateStar(this,5)">★</span>
+            </div>
+            <textarea class="form-textarea" placeholder="Share your experience…" style="margin-top:10px"></textarea>
+            <button class="btn-primary-full" style="margin-top:10px">Submit Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HISTORY ── -->
+      <div id="v-history" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Service History</div>
+          <div style="font-size:13px;color:var(--ink-4)">Every job, every detail</div>
+        </div>
+        <div class="history-filters">
+          <button class="filter-btn active">All Time</button>
+          <button class="filter-btn">This Month</button>
+          <button class="filter-btn">Last 3 Months</button>
+          <button class="filter-btn">AC</button>
+          <button class="filter-btn">Cleaning</button>
+          <button class="filter-btn">Plumbing</button>
+        </div>
+        <div class="history-table">
+          <div class="ht-row ft-row-header" style="background:var(--off);padding:10px 16px">
+            <div class="ht-col">Service</div>
+            <div class="ht-col">Technician</div>
+            <div class="ht-col">Amount</div>
+            <div class="ht-col">Status</div>
+            <div class="ht-col">Rating</div>
+          </div>
+          <div class="ht-row"><div class="ht-service"><span class="ht-emoji">❄️</span><div><div class="ht-name">AC Servicing</div><div class="ht-date">Today</div></div></div><div class="ht-tech">Karim Ahmed</div><div class="ht-amt">৳1,200</div><div><span class="ht-status" style="background:var(--amber-2);color:var(--amber)">Active</span></div><div style="color:var(--ink-4);font-size:12px">—</div></div>
+          <div class="ht-row"><div class="ht-service"><span class="ht-emoji">🧹</span><div><div class="ht-name">Deep Cleaning</div><div class="ht-date">15 Jun</div></div></div><div class="ht-tech">Sumaiya Islam</div><div class="ht-amt">৳3,500</div><div><span class="ht-status" style="background:var(--green-2);color:var(--green)">Done</span></div><div class="ft-stars">★★★★★</div></div>
+          <div class="ht-row"><div class="ht-service"><span class="ht-emoji">🔧</span><div><div class="ht-name">Plumbing</div><div class="ht-date">8 Jun</div></div></div><div class="ht-tech">Rafiq Mia</div><div class="ht-amt">৳850</div><div><span class="ht-status" style="background:var(--green-2);color:var(--green)">Done</span></div><div class="ft-stars">★★★★☆</div></div>
+          <div class="ht-row"><div class="ht-service"><span class="ht-emoji">⚡</span><div><div class="ht-name">Electrical</div><div class="ht-date">1 Jun</div></div></div><div class="ht-tech">Alam Hossain</div><div class="ht-amt">৳650</div><div><span class="ht-status" style="background:var(--green-2);color:var(--green)">Done</span></div><div class="ft-stars">★★★★★</div></div>
+          <div class="ht-row"><div class="ht-service"><span class="ht-emoji">🪲</span><div><div class="ht-name">Pest Control</div><div class="ht-date">20 May</div></div></div><div class="ht-tech">Jahid Hassan</div><div class="ht-amt">৳2,200</div><div><span class="ht-status" style="background:var(--green-2);color:var(--green)">Done</span></div><div class="ft-stars">★★★★★</div></div>
+        </div>
+      </div>
+
+      <!-- ── INVOICES ── -->
+      <div id="v-invoices" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Invoices & Billing</div>
+          <div style="font-size:13px;color:var(--ink-4)">Summary on screen · Full PDF available for every invoice</div>
+        </div>
+        <div class="invoice-summary">
+          <div class="metric"><div class="metric-label">This Month</div><div class="metric-value" style="font-size:1.5rem">৳6,200</div></div>
+          <div class="metric"><div class="metric-label">Outstanding</div><div class="metric-value" style="font-size:1.5rem;color:var(--red)">৳1,200</div><span class="metric-pill mp-red">Unpaid</span></div>
+          <div class="metric"><div class="metric-label">Paid</div><div class="metric-value" style="font-size:1.5rem;color:var(--green)">৳5,000</div><span class="metric-pill mp-green">Settled</span></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Invoice Archive</div><button class="card-action">Download All PDF</button></div>
+          <div>
+            <div class="ht-row ft-row-header" style="background:var(--off);padding:10px 16px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 80px">
+              <div class="ht-col">Invoice</div><div class="ht-col">Description</div><div class="ht-col">Type</div><div class="ht-col">Amount</div><div class="ht-col">Status</div><div class="ht-col"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center">
+              <div style="font-family:var(--font-m);font-size:11px;color:var(--ink-4)">INV-0847</div>
+              <div style="font-size:13px;color:var(--ink)">AC Servicing</div>
+              <div><span class="tag" style="background:var(--off);color:var(--ink-3);border:1px solid var(--border);font-size:10px">Ad-hoc</span></div>
+              <div style="font-family:var(--font-m);font-size:13px">৳1,200</div>
+              <div><span class="tag" style="background:var(--red-2);color:var(--red);font-size:10px">Unpaid</span></div>
+              <div><button class="btn-next btn-sm" onclick="showView('payment',null)" style="font-size:11px;padding:6px 14px">Pay</button></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center">
+              <div style="font-family:var(--font-m);font-size:11px;color:var(--ink-4)">INV-JUN</div>
+              <div style="font-size:13px;color:var(--ink)">Monthly Plan — June</div>
+              <div><span class="tag" style="background:var(--blue-2);color:var(--blue);font-size:10px">Monthly</span></div>
+              <div style="font-family:var(--font-m);font-size:13px">৳2,999</div>
+              <div><span class="tag" style="background:var(--green-2);color:var(--green);font-size:10px">Paid</span></div>
+              <div><button class="btn-back-wiz btn-sm" style="font-size:11px;padding:6px 14px">PDF</button></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center">
+              <div style="font-family:var(--font-m);font-size:11px;color:var(--ink-4)">INV-0821</div>
+              <div style="font-size:13px;color:var(--ink)">Deep Cleaning</div>
+              <div><span class="tag" style="background:var(--off);color:var(--ink-3);border:1px solid var(--border);font-size:10px">Ad-hoc</span></div>
+              <div style="font-family:var(--font-m);font-size:13px">৳3,500</div>
+              <div><span class="tag" style="background:var(--green-2);color:var(--green);font-size:10px">Paid</span></div>
+              <div><button class="btn-back-wiz btn-sm" style="font-size:11px;padding:6px 14px">PDF</button></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 80px;padding:12px 16px;align-items:center">
+              <div style="font-family:var(--font-m);font-size:11px;color:var(--ink-4)">INV-0798</div>
+              <div style="font-size:13px;color:var(--ink)">Plumbing Repair</div>
+              <div><span class="tag" style="background:var(--off);color:var(--ink-3);border:1px solid var(--border);font-size:10px">Ad-hoc</span></div>
+              <div style="font-family:var(--font-m);font-size:13px">৳850</div>
+              <div><span class="tag" style="background:var(--green-2);color:var(--green);font-size:10px">Paid</span></div>
+              <div><button class="btn-back-wiz btn-sm" style="font-size:11px;padding:6px 14px">PDF</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAYMENT ── -->
+      <div id="v-payment" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Payments</div>
+          <div style="font-size:13px;color:var(--ink-4)">Pay digitally or schedule cash collection at your door</div>
+        </div>
+        <div class="pay-invoice-card">
+          <div class="pic-amount">৳1,200</div>
+          <div class="pic-desc">AC Servicing · 2 units · Job #SS-2025-0847 · Today</div>
+          <div class="pay-grid">
+            <div class="pay-option">
+              <div class="pay-option-title">💳 Pay Digitally</div>
+              <div class="pay-method-list">
+                <div class="pay-btn-method selected"><span class="pbm-icon">💚</span><div><div class="pbm-name">bKash</div></div></div>
+                <div class="pay-btn-method"><span class="pbm-icon">🔵</span><div><div class="pbm-name">Nagad</div></div></div>
+                <div class="pay-btn-method"><span class="pbm-icon">💳</span><div><div class="pbm-name">Card / SSLCommerz</div></div></div>
+              </div>
+              <button class="btn-primary-full">Pay ৳1,200 via bKash →</button>
+            </div>
+            <div class="pay-option">
+              <div class="pay-option-title">💵 Cash Collection</div>
+              <div class="cash-schedule">Select your preferred date & time. Our collector will visit you and confirm payment on the spot — reflected instantly across all dashboards.</div>
+              <div class="form-group"><label class="form-label">Collection Date</label><input class="form-input" type="date" value="2025-06-23"></div>
+              <div class="form-group"><label class="form-label">Preferred Time</label><select class="form-select"><option>Morning (9am–12pm)</option><option>Afternoon (12pm–3pm)</option><option>Evening (3pm–6pm)</option></select></div>
+              <button class="btn-outline-full">Schedule Cash Collection</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FEEDBACK ── -->
+      <div id="v-feedback" class="view fade-in">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:4px">Ratings & Feedback</div>
+          <div style="font-size:13px;color:var(--ink-4)">Your feedback shapes our team — thank you for taking the time</div>
+        </div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-header"><div class="card-title">Awaiting Your Rating</div><span class="tag" style="background:var(--amber-2);color:var(--amber);font-size:10px">2 pending</span></div>
+          <div class="card-body">
+            <div class="feedback-pending">
+              <div class="fp-header">
+                <div class="job-ico">❄️</div>
+                <div><div class="fp-title">AC Servicing — 2 Units</div><div class="fp-date">Today · Karim Ahmed</div></div>
+              </div>
+              <div class="stars-row" id="stars1">
+                <span class="star-btn active" onclick="rateStar1(1)">★</span>
+                <span class="star-btn active" onclick="rateStar1(2)">★</span>
+                <span class="star-btn active" onclick="rateStar1(3)">★</span>
+                <span class="star-btn active" onclick="rateStar1(4)">★</span>
+                <span class="star-btn" onclick="rateStar1(5)">★</span>
+              </div>
+              <textarea class="form-textarea" placeholder="How was the service quality, punctuality and professionalism?" style="margin-bottom:10px"></textarea>
+              <button class="btn-next" style="font-size:13px;padding:10px 20px">Submit Rating</button>
+            </div>
+            <div class="feedback-pending" style="border:1px solid var(--border);border-radius:14px;padding:1.25rem">
+              <div class="fp-header">
+                <div class="job-ico">🧹</div>
+                <div><div class="fp-title">Deep Cleaning</div><div class="fp-date">15 Jun · Sumaiya Islam</div></div>
+              </div>
+              <div class="stars-row" id="stars2">
+                <span class="star-btn" onclick="rateStar2(1)">★</span>
+                <span class="star-btn" onclick="rateStar2(2)">★</span>
+                <span class="star-btn" onclick="rateStar2(3)">★</span>
+                <span class="star-btn" onclick="rateStar2(4)">★</span>
+                <span class="star-btn" onclick="rateStar2(5)">★</span>
+              </div>
+              <textarea class="form-textarea" placeholder="How was the service quality, punctuality and professionalism?" style="margin-bottom:10px"></textarea>
+              <button class="btn-next" style="font-size:13px;padding:10px 20px">Submit Rating</button>
+            </div>
+          </div>
+        </div>
+        <div class="feedback-table">
+          <div class="ft-row ft-row-header" style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr">
+            <div class="ht-col">Service</div><div class="ht-col">Date</div><div class="ht-col">Stars</div><div class="ht-col">Your Feedback</div>
+          </div>
+          <div class="ft-row"><div><div style="font-size:13px;font-weight:600">Plumbing</div><div style="font-size:11px;color:var(--ink-4)">Rafiq Mia</div></div><div style="font-size:12px;color:var(--ink-4);font-family:var(--font-m)">8 Jun</div><div class="ft-stars">★★★★☆</div><div class="ft-feedback">"Fixed quickly, professional and tidy"</div></div>
+          <div class="ft-row"><div><div style="font-size:13px;font-weight:600">Electrical</div><div style="font-size:11px;color:var(--ink-4)">Alam Hossain</div></div><div style="font-size:12px;color:var(--ink-4);font-family:var(--font-m)">1 Jun</div><div class="ft-stars">★★★★★</div><div class="ft-feedback">"Very knowledgeable, explained everything"</div></div>
+          <div class="ft-row" style="border-bottom:none"><div><div style="font-size:13px;font-weight:600">Pest Control</div><div style="font-size:11px;color:var(--ink-4)">Jahid Hassan</div></div><div style="font-size:12px;color:var(--ink-4);font-family:var(--font-m)">20 May</div><div class="ft-stars">★★★★★</div><div class="ft-feedback">"Thorough job, no smell left behind"</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<div class="mobile-bottom-nav">
+  <button class="mbn-item active" onclick="showView('dashboard',this)"><div class="mbn-ico">⊞</div><div class="mbn-label">Home</div></button>
+  <button class="mbn-item" onclick="showView('book',this)"><div class="mbn-ico">＋</div><div class="mbn-label">Book</div></button>
+  <button class="mbn-item" onclick="showView('tracking',this)"><div class="mbn-ico">◎</div><div class="mbn-label">Track</div></button>
+  <button class="mbn-item" onclick="showView('invoices',this)"><div class="mbn-ico">◻</div><div class="mbn-label">Bills</div></button>
+  <button class="mbn-item" onclick="showView('feedback',this)"><div class="mbn-ico">★</div><div class="mbn-label">Rate</div></button>
+</div>
+
+<script>
+var currentStep=1;
+var titles={dashboard:'Dashboard',book:'Book a Service',tracking:'Job Tracker',history:'Service History',invoices:'Invoices & Billing',payment:'Payments',feedback:'Ratings & Feedback'};
+
+function showView(name,el){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById('v-'+name).classList.add('active');
+  document.getElementById('topbarTitle').textContent=titles[name]||name;
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function nextStep(step){
+  document.querySelectorAll('.wizard-step').forEach(function(s){s.classList.remove('active')});
+  var el=document.getElementById('ws-'+step);
+  if(el){el.classList.add('active');currentStep=step;}
+  updateProgress(step);
+}
+
+function updateProgress(step){
+  for(var i=1;i<=4;i++){
+    var c=document.getElementById('wc'+i);
+    var l=document.getElementById('wl'+i);
+    var lb=document.getElementById('wl-'+i);
+    if(c){
+      c.className='wp-circle';
+      if(i<step){c.classList.add('done');c.textContent='✓';}
+      else if(i===step){c.classList.add('active');c.textContent=i;}
+      else{c.textContent=i;}
+    }
+    if(l){l.className='wp-line';if(i<step)l.classList.add('done');}
+    if(lb){lb.className='wp-label';if(i<step)lb.classList.add('done');else if(i===step)lb.classList.add('active');}
+  }
+}
+
+function selectService(el){
+  document.querySelectorAll('.svc-pick-card').forEach(function(c){c.classList.remove('selected')});
+  el.classList.add('selected');
+}
+
+function submitBooking(){
+  document.querySelectorAll('.wizard-step').forEach(function(s){s.style.display='none'});
+  document.getElementById('wizardProgress').style.display='none';
+  document.querySelector('.wp-labels').style.display='none';
+  var ss=document.getElementById('successScreen');
+  ss.style.display='block';
+}
+
+function rateStar(el,n){
+  var stars=el.closest('.stars-row').querySelectorAll('.star-btn');
+  stars.forEach(function(s,i){s.classList.toggle('active',i<n)});
+}
+function rateStar1(n){
+  document.querySelectorAll('#stars1 .star-btn').forEach(function(s,i){s.classList.toggle('active',i<n)});
+}
+function rateStar2(n){
+  document.querySelectorAll('#stars2 .star-btn').forEach(function(s,i){s.classList.toggle('active',i<n)});
+}
+
+document.querySelectorAll('.filter-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    btn.closest('.history-filters').querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.pay-btn-method').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    btn.closest('.pay-method-list').querySelectorAll('.pay-btn-method').forEach(function(b){b.classList.remove('selected')});
+    btn.classList.add('selected');
+  });
+});
+document.querySelectorAll('.time-slot').forEach(function(s){
+  s.addEventListener('click',function(){
+    s.closest('.time-slots').querySelectorAll('.time-slot').forEach(function(t){t.classList.remove('selected')});
+    s.classList.add('selected');
+  });
+});
+document.querySelectorAll('.pay-method').forEach(function(m){
+  m.addEventListener('click',function(){
+    m.closest('.pay-methods').querySelectorAll('.pay-method').forEach(function(p){p.classList.remove('selected')});
+    m.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>

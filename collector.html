@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartServices — Collector App</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1923;--ink-2:#2C3E50;--ink-3:#4A5568;--ink-4:#718096;
+  --gold:#B8860B;--gold-2:#D4A017;--gold-3:#F5E6C0;--gold-4:#FBF5E8;
+  --cream:#FAFAF7;--white:#FFFFFF;--off:#F4F2ED;
+  --border:#E8E4DC;--border-2:#D4CFC4;
+  --green:#1A6B47;--green-2:#E8F5EE;--green-3:#D1EDDF;
+  --red:#9B2335;--red-2:#FDEAEC;
+  --blue:#1A4A8A;--blue-2:#EAF0FB;
+  --amber:#C27B2A;--amber-2:#FFF3E0;
+  --font-d:'Fraunces',serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--font-b);background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;max-width:420px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+
+/* HEADER */
+.app-header{background:var(--ink);padding:1.25rem 1.25rem 1rem;position:sticky;top:0;z-index:50}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.header-logo{font-family:var(--font-d);font-size:16px;font-weight:600;color:var(--white)}
+.header-logo span{color:var(--gold-2)}
+.header-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:700}
+.header-greeting{font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--white);margin-bottom:2px;letter-spacing:-0.02em}
+.header-greeting em{font-style:italic;color:var(--gold-2)}
+.header-sub{font-size:12px;color:rgba(255,255,255,0.4)}
+.today-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:0.875rem}
+.today-item{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;text-align:center}
+.today-num{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:var(--white);line-height:1}
+.today-num.gold{color:var(--gold-2)}
+.today-num.green{color:#5ECA8A}
+.today-label{font-size:9px;font-family:var(--font-m);color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px}
+
+/* CONTENT */
+.content{padding:1.25rem}
+
+/* VIEW */
+.view{display:none}.view.active{display:block}
+
+/* NEXT COLLECTION — hero */
+.next-card{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:1.25rem;box-shadow:0 4px 20px rgba(15,25,35,0.06)}
+.nc-header{background:linear-gradient(135deg,var(--ink),#1A2E3F);padding:1.25rem}
+.nc-eyebrow{font-family:var(--font-m);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px}
+.nc-time{font-family:var(--font-d);font-size:2rem;font-weight:300;color:var(--white);letter-spacing:-0.02em;line-height:1;margin-bottom:2px}
+.nc-time em{color:var(--gold-2);font-style:italic}
+.nc-date{font-size:12px;color:rgba(255,255,255,0.4)}
+.nc-body{padding:1.25rem}
+.nc-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:var(--ink-2)}
+.nc-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.nc-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em}
+.nc-amount{font-family:var(--font-d);font-size:2.4rem;font-weight:400;color:var(--ink);letter-spacing:-0.03em;margin-bottom:4px}
+.nc-amount-label{font-size:12px;color:var(--ink-4);margin-bottom:1.25rem}
+.nc-invoices{background:var(--off);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--ink-3);margin-bottom:1.25rem;border:1px solid var(--border)}
+.nc-inv-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)}
+.nc-inv-row:last-child{border-bottom:none}
+.nc-inv-desc{color:var(--ink-3)}
+.nc-inv-amt{font-family:var(--font-m);color:var(--ink);font-weight:600}
+
+/* BIG CONFIRM BUTTON */
+.btn-confirm{width:100%;padding:20px;border-radius:16px;background:var(--green);color:var(--white);font-size:17px;font-weight:700;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 24px rgba(26,107,71,0.25);letter-spacing:0.02em}
+.btn-confirm:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(26,107,71,0.2)}
+.btn-confirm:hover{background:#1d7a53;box-shadow:0 8px 28px rgba(26,107,71,0.35)}
+.btn-secondary{width:100%;padding:15px;border-radius:16px;background:transparent;color:var(--ink-3);font-size:14px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:8px}
+.btn-secondary:hover{border-color:var(--ink-3);color:var(--ink)}
+.btn-skip{width:100%;padding:13px;border-radius:16px;background:var(--red-2);color:var(--red);font-size:14px;font-weight:600;border:1.5px solid #F5B8C0;cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:8px}
+.btn-skip:hover{background:#FBD4D9}
+
+/* SCHEDULE LIST */
+.schedule-section{margin-bottom:1.25rem}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.section-title{font-size:13px;font-weight:700;color:var(--ink)}
+.section-badge{font-size:10px;font-family:var(--font-m);padding:3px 9px;border-radius:100px}
+
+.sched-card{background:var(--white);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;transition:all 0.2s;cursor:pointer}
+.sched-card:hover{border-color:var(--gold-3);transform:translateY(-1px)}
+.sched-card.done{opacity:0.7}
+.sched-inner{display:flex;align-items:stretch;gap:0}
+.sched-time-col{padding:12px 10px;background:var(--off);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:56px}
+.sched-time{font-family:var(--font-m);font-size:11px;color:var(--ink);font-weight:700;text-align:center;line-height:1.3}
+.sched-body{padding:12px;flex:1}
+.sched-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.sched-addr{font-size:11px;color:var(--ink-4);margin-bottom:6px}
+.sched-footer{display:flex;align-items:center;justify-content:space-between}
+.sched-amt{font-family:var(--font-m);font-size:13px;font-weight:700}
+.sched-amt.green{color:var(--green)}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
+.b-green{background:var(--green-2);color:var(--green)}
+.b-amber{background:var(--amber-2);color:var(--amber)}
+.b-blue{background:var(--blue-2);color:var(--blue)}
+.b-red{background:var(--red-2);color:var(--red)}
+.b-ink{background:var(--off);color:var(--ink-2);border:1px solid var(--border)}
+
+/* HISTORY */
+.hist-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:0;overflow:hidden}
+.hist-row{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border)}
+.hist-row:last-child{border-bottom:none}
+.hist-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hico-green{background:var(--green-2);border:1px solid var(--green-3)}
+.hico-red{background:var(--red-2);border:1px solid #F5B8C0}
+.hist-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:1px}
+.hist-meta{font-size:11px;color:var(--ink-4)}
+.hist-right{margin-left:auto;text-align:right;flex-shrink:0}
+.hist-amt{font-family:var(--font-m);font-size:13px;font-weight:700}
+.hist-amt.green{color:var(--green)}
+.hist-amt.red{color:var(--red)}
+.hist-time{font-size:10px;color:var(--ink-4);margin-top:1px}
+
+/* EARNINGS */
+.earn-hero{background:var(--ink);border-radius:18px;padding:1.5rem;margin-bottom:1rem;text-align:center}
+.earn-label{font-size:11px;font-family:var(--font-m);color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+.earn-amount{font-family:var(--font-d);font-size:3rem;font-weight:300;color:var(--white);letter-spacing:-0.03em;line-height:1}
+.earn-amount em{color:var(--gold-2);font-style:italic}
+.earn-period{font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px}
+.earn-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.earn-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:0.875rem;text-align:center}
+.earn-card-num{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:var(--ink)}
+.earn-card-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-top:2px}
+
+/* INFO CARD */
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
+.info-card-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--white);border-top:1px solid var(--border);padding:6px 1rem;display:flex;z-index:100}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:var(--font-b);transition:background 0.2s;position:relative}
+.bn-item.active{background:var(--gold-4)}
+.bn-ico{font-size:22px;line-height:1}
+.bn-label{font-size:9px;font-weight:500;color:var(--ink-4)}
+.bn-item.active .bn-label{color:var(--gold)}
+.bn-dot{position:absolute;top:6px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--white)}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(15,25,35,0.75);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0}
+.overlay.show{display:flex}
+.overlay-card{background:var(--white);border-radius:24px 24px 0 0;padding:2rem 1.5rem;width:100%;max-width:420px;text-align:center;animation:slideUp 0.4s var(--ease)}
+.overlay-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;animation:popIn 0.4s var(--ease)}
+.overlay-title{font-family:var(--font-d);font-size:1.6rem;font-weight:300;color:var(--ink);margin-bottom:6px}
+.overlay-sub{font-size:14px;color:var(--ink-4);margin-bottom:1.5rem;line-height:1.6;font-weight:300}
+.overlay-amount{font-family:var(--font-d);font-size:2.5rem;font-weight:400;color:var(--green);letter-spacing:-0.03em;margin-bottom:4px}
+.overlay-ref{font-family:var(--font-m);font-size:11px;color:var(--ink-4);background:var(--off);display:inline-block;padding:5px 14px;border-radius:100px;margin-bottom:1.5rem;border:1px solid var(--border)}
+.cash-confirm-input{background:var(--off);border:2px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1.25rem;text-align:left}
+.cci-label{font-size:11px;font-family:var(--font-m);color:var(--ink-4);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em}
+.cci-value{font-family:var(--font-d);font-size:2rem;font-weight:400;color:var(--ink)}
+.cci-note{font-size:12px;color:var(--ink-3);margin-top:4px}
+.photo-prompt{background:var(--blue-2);border:1px solid #B5CFF4;border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:13px;color:var(--blue);line-height:1.6;display:flex;align-items:center;gap:10px}
+
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes popIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp 0.35s var(--ease)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="header-logo">Smart<span>Services</span></div>
+    <div class="header-avatar">MK</div>
+  </div>
+  <div class="header-greeting">Mostofa <em>Karim</em></div>
+  <div class="header-sub">Cash Collector · Zone A · COL-0012</div>
+  <div class="today-strip">
+    <div class="today-item">
+      <div class="today-num">5</div>
+      <div class="today-label">Scheduled</div>
+    </div>
+    <div class="today-item">
+      <div class="today-num green">2</div>
+      <div class="today-label">Collected</div>
+    </div>
+    <div class="today-item">
+      <div class="today-num gold">৳51,500</div>
+      <div class="today-label">Remaining</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ── TODAY ── -->
+  <div id="v-today" class="view active fade-in">
+
+    <!-- Next collection hero -->
+    <div class="next-card">
+      <div class="nc-header">
+        <div class="nc-eyebrow">Next Collection</div>
+        <div class="nc-time"><em>2:00</em> PM</div>
+        <div class="nc-date">Today · Sunday 22 June 2025</div>
+      </div>
+      <div class="nc-body">
+        <div class="nc-row">
+          <div class="nc-icon">👤</div>
+          <div><div class="nc-label">Customer</div>Nadia Rahman · 01712-000001</div>
+        </div>
+        <div class="nc-row">
+          <div class="nc-icon">📍</div>
+          <div><div class="nc-label">Address</div>Apt 6C, Road 5, Mohammadpur, Dhaka</div>
+        </div>
+
+        <div class="nc-amount">৳2,200</div>
+        <div class="nc-amount-label">Cash to collect</div>
+
+        <div class="nc-invoices">
+          <div class="nc-inv-row"><div class="nc-inv-desc">Pest Control — Full Apartment</div><div class="nc-inv-amt">৳2,200</div></div>
+        </div>
+
+        <button class="btn-confirm" onclick="showCollectOverlay()">
+          ✓ Confirm Cash Collected
+        </button>
+        <button class="btn-secondary" onclick="showCantCollect()">Can't Collect — Reschedule</button>
+      </div>
+    </div>
+
+    <!-- Rest of schedule -->
+    <div class="schedule-section">
+      <div class="section-header">
+        <div class="section-title">Today's Full Schedule</div>
+        <span class="badge b-blue">5 stops</span>
+      </div>
+
+      <div class="sched-card done">
+        <div class="sched-inner">
+          <div class="sched-time-col"><div class="sched-time">9:00<br>AM</div></div>
+          <div class="sched-body">
+            <div class="sched-name">Rashida Khanam</div>
+            <div class="sched-addr">Apt 4B, Baridhara</div>
+            <div class="sched-footer"><div class="sched-amt green">৳1,200</div><span class="badge b-green">Done ✓</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-card done">
+        <div class="sched-inner">
+          <div class="sched-time-col"><div class="sched-time">11:00<br>AM</div></div>
+          <div class="sched-body">
+            <div class="sched-name">Kamal Hossain</div>
+            <div class="sched-addr">House 12, Uttara</div>
+            <div class="sched-footer"><div class="sched-amt green">৳8,500</div><span class="badge b-green">Done ✓</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-card" style="border-color:var(--amber);box-shadow:0 0 0 2px rgba(194,123,42,0.1)">
+        <div class="sched-inner">
+          <div class="sched-time-col" style="background:var(--amber-2)"><div class="sched-time" style="color:var(--amber)">2:00<br>PM</div></div>
+          <div class="sched-body">
+            <div class="sched-name">Nadia Rahman</div>
+            <div class="sched-addr">Apt 6C, Mohammadpur</div>
+            <div class="sched-footer"><div class="sched-amt" style="color:var(--amber)">৳2,200</div><span class="badge b-amber">● Now</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-card">
+        <div class="sched-inner">
+          <div class="sched-time-col"><div class="sched-time">4:00<br>PM</div></div>
+          <div class="sched-body">
+            <div class="sched-name">Baridhara Society</div>
+            <div class="sched-addr">Road 11, Baridhara</div>
+            <div class="sched-footer"><div class="sched-amt">৳48,000</div><span class="badge b-blue">Upcoming</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-card">
+        <div class="sched-inner">
+          <div class="sched-time-col"><div class="sched-time">5:30<br>PM</div></div>
+          <div class="sched-body">
+            <div class="sched-name">Mizanur Rahman</div>
+            <div class="sched-addr">Flat 3A, Dhanmondi</div>
+            <div class="sched-footer"><div class="sched-amt">৳3,500</div><span class="badge b-blue">Upcoming</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Running total -->
+    <div class="info-card" style="background:var(--green-2);border-color:var(--green-3)">
+      <div class="info-card-title" style="color:var(--green)">💰 Today's Running Total</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">
+        <span style="color:var(--green)">Collected so far</span>
+        <span style="font-family:var(--font-m);font-weight:700;color:var(--green)">৳9,700</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">
+        <span style="color:var(--ink-3)">Remaining today</span>
+        <span style="font-family:var(--font-m);color:var(--ink-2)">৳53,700</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── HISTORY ── -->
+  <div id="v-history" class="view fade-in">
+    <div class="section-header" style="margin-bottom:0.875rem">
+      <div class="section-title">Collection History</div>
+      <span class="badge b-blue">This Month</span>
+    </div>
+
+    <div class="hist-card" style="margin-bottom:1rem">
+      <!-- Today -->
+      <div style="padding:8px 12px;background:var(--off);border-bottom:1px solid var(--border);font-size:10px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.08em;text-transform:uppercase">Today</div>
+      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Rashida Khanam</div><div class="hist-meta">Baridhara · 9:05 AM</div></div><div class="hist-right"><div class="hist-amt green">৳1,200</div><div class="hist-time">Collected</div></div></div>
+      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Kamal Hossain</div><div class="hist-meta">Uttara · 11:20 AM</div></div><div class="hist-right"><div class="hist-amt green">৳8,500</div><div class="hist-time">Collected</div></div></div>
+      <!-- Yesterday -->
+      <div style="padding:8px 12px;background:var(--off);border-bottom:1px solid var(--border);border-top:1px solid var(--border);font-size:10px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.08em;text-transform:uppercase">Yesterday</div>
+      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Apex Ventures</div><div class="hist-meta">Gulshan 1 · 10:00 AM</div></div><div class="hist-right"><div class="hist-amt green">৳65,000</div><div class="hist-time">Collected</div></div></div>
+      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Nordic Residences</div><div class="hist-meta">Gulshan 2 · 2:30 PM</div></div><div class="hist-right"><div class="hist-amt green">৳18,500</div><div class="hist-time">Collected</div></div></div>
+      <div class="hist-row" style="border-bottom:none"><div class="hist-ico hico-red">✕</div><div style="flex:1"><div class="hist-title">Nadia Rahman</div><div class="hist-meta">Mohammadpur · Not home</div></div><div class="hist-right"><div class="hist-amt red">—</div><div class="hist-time">Rescheduled</div></div></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">📊 This Month Summary</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Total collections</span><span style="font-family:var(--font-m)">38</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Amount collected</span><span style="font-family:var(--font-m);color:var(--green)">৳4,82,000</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Success rate</span><span style="font-family:var(--font-m);color:var(--green)">96%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--ink-3)">Rescheduled</span><span style="font-family:var(--font-m);color:var(--amber)">2</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EARNINGS ── -->
+  <div id="v-earnings" class="view fade-in">
+    <div class="earn-hero">
+      <div class="earn-label">June Earnings</div>
+      <div class="earn-amount">৳<em>22</em>,000</div>
+      <div class="earn-period">Jun 1 – Jun 22 · 38 collections</div>
+    </div>
+
+    <div class="earn-breakdown">
+      <div class="earn-card"><div class="earn-card-num">38</div><div class="earn-card-label">Collected</div></div>
+      <div class="earn-card"><div class="earn-card-num">96%</div><div class="earn-card-label">Success</div></div>
+      <div class="earn-card"><div class="earn-card-num">৳4.8L</div><div class="earn-card-label">Amount</div></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">💰 Earnings Breakdown</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Base salary</span><span style="font-family:var(--font-m)">৳12,000</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Collection bonus</span><span style="font-family:var(--font-m)">৳7,600</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Punctuality bonus</span><span style="font-family:var(--font-m)">৳2,400</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:8px 0"><span>Total June</span><span style="font-family:var(--font-m);color:var(--green)">৳22,000</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="bn-item active" onclick="showView('today',this)">
+    <div class="bn-ico">📋</div>
+    <div class="bn-label">Today</div>
+    <div class="bn-dot"></div>
+  </button>
+  <button class="bn-item" onclick="showView('history',this)">
+    <div class="bn-ico">📂</div>
+    <div class="bn-label">History</div>
+  </button>
+  <button class="bn-item" onclick="showView('earnings',this)">
+    <div class="bn-ico">💰</div>
+    <div class="bn-label">Earnings</div>
+  </button>
+</div>
+
+<!-- COLLECT CONFIRM OVERLAY -->
+<div class="overlay" id="collectOverlay">
+  <div class="overlay-card">
+    <div class="overlay-icon" style="background:var(--green-2)">💵</div>
+    <div class="overlay-title">Confirm Collection</div>
+
+    <div class="cash-confirm-input">
+      <div class="cci-label">Amount to Confirm</div>
+      <div class="cci-value">৳2,200</div>
+      <div class="cci-note">Pest Control · Nadia Rahman · Mohammadpur</div>
+    </div>
+
+    <div class="photo-prompt">
+      <div style="font-size:22px;flex-shrink:0">📷</div>
+      <div>Take a photo of the cash or any receipt as confirmation (optional but recommended).</div>
+    </div>
+
+    <button class="btn-confirm" onclick="confirmCollection()" style="margin-bottom:8px">
+      ✓ Confirm ৳2,200 Received
+    </button>
+    <button class="btn-secondary" onclick="closeOverlay('collectOverlay')">Cancel</button>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="overlay" id="successOverlay">
+  <div class="overlay-card">
+    <div class="overlay-icon" style="background:var(--green-2)">✓</div>
+    <div class="overlay-title">Collection Confirmed!</div>
+    <div class="overlay-amount">৳2,200</div>
+    <div class="overlay-sub">Payment confirmed and recorded. The customer's invoice has been marked as paid. Admin has been notified.</div>
+    <div class="overlay-ref">Nadia Rahman · 2:15 PM · COL-0041</div>
+    <button class="btn-confirm" onclick="closeOverlay('successOverlay')" style="margin-bottom:0">
+      Continue to Next Collection →
+    </button>
+  </div>
+</div>
+
+<!-- CANT COLLECT OVERLAY -->
+<div class="overlay" id="rescheduleOverlay">
+  <div class="overlay-card">
+    <div class="overlay-icon" style="background:var(--amber-2);font-size:24px">📅</div>
+    <div class="overlay-title">Reschedule Collection</div>
+    <div class="overlay-sub" style="margin-bottom:1rem">Can't collect right now? Let us know why and admin will reschedule with the customer.</div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px">Reason</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Customer not home</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Customer requested new time</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Address not found</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Safety / other issue</label>
+      </div>
+    </div>
+    <button class="btn-confirm" onclick="closeOverlay('rescheduleOverlay')" style="background:var(--amber);margin-bottom:8px">
+      📤 Report & Move On
+    </button>
+    <button class="btn-secondary" onclick="closeOverlay('rescheduleOverlay')">Cancel</button>
+  </div>
+</div>
+
+<script>
+function showView(name,el){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById('v-'+name).classList.add('active');
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active')});
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+function showCollectOverlay(){
+  document.getElementById('collectOverlay').classList.add('show');
+}
+function confirmCollection(){
+  document.getElementById('collectOverlay').classList.remove('show');
+  setTimeout(function(){document.getElementById('successOverlay').classList.add('show');},200);
+}
+function showCantCollect(){
+  document.getElementById('rescheduleOverlay').classList.add('show');
+}
+function closeOverlay(id){
+  document.getElementById(id).classList.remove('show');
+}
+</script>
+</body>
+</html>
