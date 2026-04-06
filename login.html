@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartServices — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="shared.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0F1923;min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow:hidden}
+.left{width:55%;background:#0F1923;display:flex;flex-direction:column;justify-content:center;padding:4rem;position:relative;overflow:hidden}
+.left-bg{position:absolute;inset:0;pointer-events:none}
+.bg-circle-1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,0.07) 0%,transparent 70%);top:-100px;right:-100px}
+.bg-circle-2{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(26,74,138,0.08) 0%,transparent 70%);bottom:-50px;left:-50px}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:40px 40px}
+.left-content{position:relative;z-index:1;max-width:440px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:3rem}
+.logo-mark{width:40px;height:40px;background:#D4A017;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:20px;height:20px}
+.logo-name{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;letter-spacing:-0.02em}
+.logo-name span{color:#D4A017}
+.tagline{font-family:'Fraunces',serif;font-size:clamp(2rem,3.5vw,2.8rem);font-weight:300;color:#fff;line-height:1.15;letter-spacing:-0.03em;margin-bottom:1rem}
+.tagline em{font-style:italic;color:#D4A017}
+.tagline-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,0.4);line-height:1.7;margin-bottom:2.5rem}
+.role-pills{display:flex;flex-wrap:wrap;gap:8px}
+.role-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.04)}
+.rp-dot{width:6px;height:6px;border-radius:50%}
+.right{width:45%;background:#FAFAF7;display:flex;align-items:center;justify-content:center;padding:3rem 2.5rem}
+.form-card{width:100%;max-width:380px}
+.form-title{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:400;color:#0F1923;letter-spacing:-0.02em;margin-bottom:4px}
+.form-sub{font-size:13px;color:#718096;margin-bottom:2rem;font-weight:300}
+.demo-note{background:#FBF5E8;border:1px solid #F5E6C0;border-radius:12px;padding:.875rem 1rem;margin-bottom:1.5rem;font-size:12px;color:#B8860B;line-height:1.6}
+.demo-note strong{font-weight:700;display:block;margin-bottom:3px}
+.fg{margin-bottom:1rem}
+.fl{display:block;font-size:12px;font-weight:600;color:#0F1923;margin-bottom:5px;letter-spacing:0.01em}
+.fi-wrap{position:relative}
+.fi-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:600;color:#0F1923;pointer-events:none;font-family:'JetBrains Mono',monospace}
+.fi{width:100%;border:1.5px solid #E8E4DC;border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:#0F1923;background:#fff;outline:none;transition:border-color 0.2s}
+.fi:focus{border-color:#D4A017;box-shadow:0 0 0 3px rgba(212,160,23,0.08)}
+.fi-phone{padding-left:48px}
+.fi-pw{padding-right:44px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#718096;padding:4px}
+.error-msg{background:#FDEAEC;border:1px solid #F5B8C0;border-radius:10px;padding:.75rem 1rem;font-size:13px;color:#9B2335;margin-bottom:1rem;display:none}
+.btn-login{width:100%;padding:14px;border-radius:12px;background:#0F1923;color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;margin-top:.5rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-login:hover{background:#2C3E50;transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,25,35,0.25)}
+.btn-login:disabled{background:#E8E4DC;color:#718096;cursor:not-allowed;transform:none;box-shadow:none}
+.divider{display:flex;align-items:center;gap:10px;margin:1.25rem 0;color:#D4CFC4;font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#E8E4DC}
+.demo-accounts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.demo-btn{border:1.5px solid #E8E4DC;border-radius:10px;padding:9px 10px;background:#fff;cursor:pointer;transition:all 0.2s;text-align:left;font-family:'Plus Jakarta Sans',sans-serif}
+.demo-btn:hover{border-color:#D4A017;background:#FBF5E8}
+.db-label{font-size:11px;font-weight:700;color:#0F1923;display:block}
+.db-role{font-size:10px;font-family:'JetBrains Mono',monospace;margin-top:1px}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){.left{display:none}.right{width:100%;padding:2rem}}
+</style>
+</head>
+<body>
+<div class="left">
+  <div class="left-bg"><div class="bg-grid"></div><div class="bg-circle-1"></div><div class="bg-circle-2"></div></div>
+  <div class="left-content">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#0F1923" stroke-width="2.5" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="logo-name">Smart<span>Services</span></div>
+    </div>
+    <h1 class="tagline">One platform.<br>Every role.<br><em>Perfectly connected.</em></h1>
+    <p class="tagline-sub">From booking to billing, dispatch to doorstep — every user has their own dashboard. All connected. All real-time.</p>
+    <div class="role-pills">
+      <div class="role-pill"><div class="rp-dot" style="background:#1A6B47"></div>Customer</div>
+      <div class="role-pill"><div class="rp-dot" style="background:#1A4A8A"></div>Technician</div>
+      <div class="role-pill"><div class="rp-dot" style="background:#C27B2A"></div>Collector</div>
+      <div class="role-pill"><div class="rp-dot" style="background:#9B2335"></div>Admin</div>
+    </div>
+  </div>
+</div>
+<div class="right">
+  <div class="form-card">
+    <div class="form-title">Welcome back</div>
+    <div class="form-sub">Sign in to your SmartServices account</div>
+    <div class="demo-note"><strong>Demo Mode</strong>Use any demo account below, or enter phone + password 1234</div>
+    <div class="error-msg" id="errorMsg">Incorrect phone number or password. Please try again.</div>
+    <div class="fg">
+      <label class="fl">Phone Number</label>
+      <div class="fi-wrap">
+        <span class="fi-prefix">+880</span>
+        <input class="fi fi-phone" id="phone" type="tel" placeholder="01711000001" maxlength="11" autocomplete="tel">
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Password</label>
+      <div class="fi-wrap">
+        <input class="fi fi-pw" id="password" type="password" placeholder="Enter your password" autocomplete="current-password">
+        <button class="pw-toggle" onclick="togglePw()" type="button" title="Show/hide password">👁</button>
+      </div>
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">
+      <span id="btnText">Sign In</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+    <div class="divider">or sign in as demo user</div>
+    <div class="demo-accounts">
+      <button class="demo-btn" onclick="fillDemo('01711000001','Customer')"><span class="db-label">Rashida Khanam</span><span class="db-role" style="color:#1A6B47">Individual Customer</span></button>
+      <button class="demo-btn" onclick="fillDemo('01711000002','Customer')"><span class="db-label">Mizanur Rahman</span><span class="db-role" style="color:#1A6B47">Building Customer</span></button>
+      <button class="demo-btn" onclick="fillDemo('01711000003','Technician')"><span class="db-label">Karim Ahmed</span><span class="db-role" style="color:#1A4A8A">AC Technician</span></button>
+      <button class="demo-btn" onclick="fillDemo('01711000005','Collector')"><span class="db-label">Mostofa Karim</span><span class="db-role" style="color:#C27B2A">Cash Collector</span></button>
+      <button class="demo-btn" onclick="fillDemo('01711000006','Admin')" style="grid-column:1/-1"><span class="db-label">Admin User</span><span class="db-role" style="color:#9B2335">Super Admin — Full Access</span></button>
+    </div>
+  </div>
+</div>
+<script>
+SS.seedIfEmpty();
+const u=SS.getUser();
+if(u) window.location.href={customer:'customer.html',technician:'technician.html',collector:'collector.html',admin:'admin.html'}[u.role]||'customer.html';
+
+function togglePw(){const i=document.getElementById('password');i.type=i.type==='password'?'text':'password';}
+function fillDemo(phone,role){document.getElementById('phone').value=phone;document.getElementById('password').value='1234';document.getElementById('errorMsg').style.display='none';document.getElementById('loginBtn').focus();}
+
+function doLogin(){
+  const phone=document.getElementById('phone').value.trim();
+  const pw=document.getElementById('password').value;
+  document.getElementById('errorMsg').style.display='none';
+  if(!phone||!pw){document.getElementById('errorMsg').textContent='Please enter your phone number and password.';document.getElementById('errorMsg').style.display='block';return;}
+  const btn=document.getElementById('loginBtn');
+  const spinner=document.getElementById('spinner');
+  const btnText=document.getElementById('btnText');
+  btn.disabled=true;spinner.style.display='block';btnText.textContent='Signing in...';
+  setTimeout(()=>{
+    const user=SS.login(phone,pw);
+    if(!user){btn.disabled=false;spinner.style.display='none';btnText.textContent='Sign In';document.getElementById('errorMsg').style.display='block';return;}
+    const dest={customer:'customer.html',technician:'technician.html',collector:'collector.html',admin:'admin.html'}[user.role]||'customer.html';
+    window.location.href=dest;
+  },700);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

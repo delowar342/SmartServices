@@ -1,519 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartServices — Technician App</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
+<title>SmartServices — Technician</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="shared.js"></script>
 <style>
-:root{
-  --ink:#0F1923;--ink-2:#2C3E50;--ink-3:#4A5568;--ink-4:#718096;
-  --gold:#B8860B;--gold-2:#D4A017;--gold-3:#F5E6C0;--gold-4:#FBF5E8;
-  --cream:#FAFAF7;--white:#FFFFFF;--off:#F4F2ED;
-  --border:#E8E4DC;--border-2:#D4CFC4;
-  --green:#1A6B47;--green-2:#E8F5EE;--green-3:#D1EDDF;
-  --red:#9B2335;--red-2:#FDEAEC;
-  --blue:#1A4A8A;--blue-2:#EAF0FB;
-  --amber:#C27B2A;--amber-2:#FFF3E0;
-  --font-d:'Fraunces',serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;
-  --ease:cubic-bezier(0.16,1,0.3,1);
-}
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px}
-body{font-family:var(--font-b);background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;max-width:420px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:80px}
-
-/* HEADER */
-.app-header{background:var(--ink);padding:1.25rem 1.25rem 1rem;position:sticky;top:0;z-index:50}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.header-logo{font-family:var(--font-d);font-size:16px;font-weight:600;color:var(--white)}
-.header-logo span{color:var(--gold-2)}
-.header-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:700}
-.header-greeting{font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--white);margin-bottom:2px;letter-spacing:-0.02em}
-.header-greeting em{font-style:italic;color:var(--gold-2)}
-.header-sub{font-size:12px;color:rgba(255,255,255,0.4)}
-.status-bar{display:flex;align-items:center;justify-content:space-between;margin-top:0.875rem;padding:10px 12px;background:rgba(255,255,255,0.06);border-radius:12px;border:1px solid rgba(255,255,255,0.08)}
-.status-left{display:flex;align-items:center;gap:8px}
-.status-dot{width:8px;height:8px;border-radius:50%;animation:pulse-dot 2s infinite}
-.sd-green{background:var(--green)}
-.status-text{font-size:12px;font-weight:600;color:var(--white)}
-.status-sub{font-size:10px;color:rgba(255,255,255,0.4);font-family:var(--font-m)}
-.toggle-btn{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
-.toggle-active{background:var(--green);color:var(--white)}
-.toggle-inactive{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6)}
-
-/* CONTENT */
-.content{padding:1.25rem}
-
-/* VIEW */
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F4F2ED;color:#0F1923;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;padding-bottom:72px}
+.content{padding:1.1rem}
 .view{display:none}.view.active{display:block}
-
-/* ACTIVE JOB CARD — hero element */
-.active-job{background:var(--white);border:1px solid var(--border);border-radius:20px;margin-bottom:1.25rem;overflow:hidden;box-shadow:0 4px 20px rgba(15,25,35,0.06)}
-.aj-header{background:linear-gradient(135deg,var(--gold-4),var(--cream));padding:1.25rem;border-bottom:1px solid var(--gold-3);display:flex;align-items:flex-start;justify-content:space-between}
-.aj-badge{font-size:10px;font-family:var(--font-m);padding:4px 10px;border-radius:100px;background:var(--amber-2);color:var(--amber);border:1px solid #F5D6A0}
-.aj-title{font-family:var(--font-d);font-size:1.25rem;font-weight:400;color:var(--ink);letter-spacing:-0.01em;margin-bottom:3px}
-.aj-ref{font-size:11px;color:var(--ink-4);font-family:var(--font-m)}
-.aj-body{padding:1.25rem}
-.aj-info-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:var(--ink-2)}
-.aj-info-icon{font-size:16px;flex-shrink:0;margin-top:1px}
-.aj-info-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em}
-.aj-notes{background:var(--off);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--ink-3);line-height:1.6;margin-bottom:1.25rem;border:1px solid var(--border)}
-
-/* STATUS BUTTONS */
-.status-actions{display:flex;flex-direction:column;gap:8px}
-.btn-big{width:100%;padding:16px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:0.01em}
-.btn-big:active{transform:scale(0.98)}
-.btn-start{background:var(--green);color:var(--white);box-shadow:0 4px 16px rgba(26,107,71,0.25)}
-.btn-start:hover{background:#1d7a53;box-shadow:0 6px 20px rgba(26,107,71,0.35)}
-.btn-complete{background:var(--ink);color:var(--white);box-shadow:0 4px 16px rgba(15,25,35,0.2)}
-.btn-complete:hover{box-shadow:0 6px 20px rgba(15,25,35,0.3)}
-.btn-parts{background:var(--amber-2);color:var(--amber);border:1.5px solid #F5D6A0}
-.btn-parts:hover{background:#FFEAD0}
-.btn-outline-big{width:100%;padding:14px;border-radius:14px;font-size:14px;font-weight:600;border:1.5px solid var(--border);background:transparent;color:var(--ink-3);cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
-.btn-outline-big:hover{border-color:var(--ink-3);color:var(--ink)}
-
-/* CHECKLIST */
-.checklist{background:var(--off);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem}
-.check-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+.duty-bar{background:#fff;border-bottom:1px solid #E8E4DC;padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between}
+.duty-info{display:flex;align-items:center;gap:8px}
+.duty-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+.dot-on{background:#1A6B47}.dot-off{background:#9B2335}
+.duty-text{font-size:13px;font-weight:600;color:#0F1923}
+.duty-sub{font-size:11px;color:#718096;font-family:'JetBrains Mono',monospace}
+.toggle{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.tog-on{background:#1A6B47;color:#fff}
+.tog-off{background:#FDEAEC;color:#9B2335}
+.active-job{background:#fff;border:1px solid #E8E4DC;border-radius:18px;margin-bottom:1rem;overflow:hidden;box-shadow:0 4px 16px rgba(15,25,35,.06)}
+.aj-head{background:linear-gradient(135deg,#FBF5E8,#FAFAF7);padding:1.1rem;border-bottom:1px solid #F5E6C0;display:flex;align-items:flex-start;justify-content:space-between}
+.aj-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:400;color:#0F1923;letter-spacing:-.01em;margin-bottom:2px}
+.aj-ref{font-size:10px;color:#718096;font-family:'JetBrains Mono',monospace}
+.aj-body{padding:1.1rem}
+.ai{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;font-size:13px;color:#2C3E50}
+.ai-ico{font-size:15px;flex-shrink:0;margin-top:1px}
+.ai-label{font-size:10px;font-family:'JetBrains Mono',monospace;color:#718096;margin-bottom:1px;text-transform:uppercase;letter-spacing:.05em}
+.notes{background:#F4F2ED;border-radius:9px;padding:9px 11px;font-size:12px;color:#4A5568;line-height:1.6;margin-bottom:1rem;border:1px solid #E8E4DC}
+.checklist{background:#F4F2ED;border:1px solid #E8E4DC;border-radius:11px;overflow:hidden;margin-bottom:.875rem}
+.check-item{display:flex;align-items:center;gap:11px;padding:11px;border-bottom:1px solid #E8E4DC;cursor:pointer;transition:background .15s}
 .check-item:last-child{border-bottom:none}
-.check-item:hover{background:rgba(15,25,35,0.02)}
-.check-box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
-.check-box.checked{background:var(--green);border-color:var(--green);color:var(--white);font-size:11px}
-.check-label{font-size:13px;color:var(--ink-2);flex:1}
-.check-label.done{text-decoration:line-through;color:var(--ink-4)}
-
-/* SECTION HEADER */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
-.section-title{font-size:13px;font-weight:700;color:var(--ink)}
-.section-action{font-size:12px;color:var(--gold);font-weight:500}
-
-/* SMALL CARDS */
-.info-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.info-card-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-
-/* QUEUE CARD */
-.queue-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all 0.2s}
-.queue-card:hover{border-color:var(--gold-3);transform:translateY(-1px)}
-.queue-time{font-family:var(--font-m);font-size:11px;color:var(--ink-4);min-width:42px;margin-top:2px;text-align:center}
-.queue-divider{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
-.queue-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.queue-meta{font-size:11px;color:var(--ink-4)}
-.queue-badge{font-size:10px;font-family:var(--font-m);padding:3px 8px;border-radius:100px;margin-left:auto;flex-shrink:0}
-
-/* HISTORY ROW */
-.hist-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.check-item:hover{background:rgba(15,25,35,.02)}
+.cb{width:20px;height:20px;border-radius:6px;border:1.5px solid #D4CFC4;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:10px;font-weight:700}
+.cb.checked{background:#1A6B47;border-color:#1A6B47;color:#fff}
+.cl{font-size:13px;color:#2C3E50;flex:1}
+.cl.done{text-decoration:line-through;color:#718096}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.625rem}
+.sec-title{font-size:13px;font-weight:700;color:#0F1923}
+.sec-prog{font-size:11px;color:#718096}
+.btn-big{width:100%;padding:16px;border-radius:13px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.btn-big:active{transform:scale(.98)}
+.btn-complete{background:#0F1923;color:#fff;box-shadow:0 4px 14px rgba(15,25,35,.2)}
+.btn-complete:hover{background:#2C3E50}
+.btn-parts{background:#FFF3E0;color:#C27B2A;border:1.5px solid #F5D6A0}
+.btn-parts:hover{background:#FFEAD0}
+.btn-out{width:100%;padding:13px;border-radius:13px;font-size:13px;font-weight:600;border:1.5px solid #E8E4DC;background:transparent;color:#4A5568;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-out:hover{border-color:#0F1923;color:#0F1923}
+.card{background:#fff;border:1px solid #E8E4DC;border-radius:14px;margin-bottom:1rem}
+.ch{padding:.875rem 1.1rem;border-bottom:1px solid #E8E4DC;display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:13px;font-weight:700;color:#0F1923}
+.cb-p{padding:1.1rem}
+.queue-card{background:#fff;border:1px solid #E8E4DC;border-radius:13px;margin-bottom:8px;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .2s}
+.queue-card:hover{border-color:#F5E6C0;transform:translateY(-1px)}
+.qc-time{padding:11px 9px;background:#F4F2ED;border-right:1px solid #E8E4DC;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#0F1923;font-weight:700;text-align:center;line-height:1.4}
+.qc-body{padding:11px;flex:1}
+.qc-title{font-size:13px;font-weight:700;color:#0F1923;margin-bottom:1px}
+.qc-meta{font-size:11px;color:#718096}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace}
+.b-green{background:#E8F5EE;color:#1A6B47}.b-amber{background:#FFF3E0;color:#C27B2A}.b-blue{background:#EAF0FB;color:#1A4A8A}.b-ink{background:#F4F2ED;color:#2C3E50;border:1px solid #E8E4DC}
+.hist-row{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #E8E4DC}
 .hist-row:last-child{border-bottom:none}
-.hist-ico{width:36px;height:36px;border-radius:10px;background:var(--gold-4);border:1px solid var(--gold-3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.hist-title{font-size:13px;font-weight:600;color:var(--ink)}
-.hist-meta{font-size:11px;color:var(--ink-4);margin-top:1px}
-.hist-right{margin-left:auto;text-align:right;flex-shrink:0}
-.hist-amt{font-family:var(--font-m);font-size:12px;color:var(--green);font-weight:600}
-.hist-status{font-size:10px;color:var(--ink-4)}
-
-/* EARNINGS */
-.earn-hero{background:var(--ink);border-radius:18px;padding:1.5rem;margin-bottom:1rem;text-align:center}
-.earn-label{font-size:11px;font-family:var(--font-m);color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
-.earn-amount{font-family:var(--font-d);font-size:3rem;font-weight:300;color:var(--white);letter-spacing:-0.03em;line-height:1}
-.earn-amount em{color:var(--gold-2);font-style:italic}
-.earn-period{font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px}
-.earn-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
-.earn-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:0.875rem;text-align:center}
-.earn-card-num{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:var(--ink)}
-.earn-card-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-top:2px;letter-spacing:0.04em}
-
-/* PARTS REQUEST */
-.parts-form{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem}
-.form-group{margin-bottom:1rem}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px}
-.form-input,.form-select,.form-textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:14px;font-family:var(--font-b);color:var(--ink);background:var(--white);outline:none;transition:border-color 0.2s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold-2)}
-.form-textarea{min-height:72px;resize:none;line-height:1.5}
-.parts-list{margin-bottom:1rem}
-.part-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--off);border-radius:8px;margin-bottom:6px;font-size:12px}
-.part-name{flex:1;font-weight:500;color:var(--ink)}
-.part-qty{font-family:var(--font-m);color:var(--ink-3)}
-.part-remove{color:var(--red);cursor:pointer;font-size:16px;padding:0 4px}
-
-/* BADGE */
-.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
-.b-green{background:var(--green-2);color:var(--green)}
-.b-amber{background:var(--amber-2);color:var(--amber)}
-.b-red{background:var(--red-2);color:var(--red)}
-.b-blue{background:var(--blue-2);color:var(--blue)}
-.b-gold{background:var(--gold-4);color:var(--gold)}
-.b-ink{background:var(--off);color:var(--ink-2);border:1px solid var(--border)}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--white);border-top:1px solid var(--border);padding:6px 1rem;display:flex;z-index:100}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:var(--font-b);transition:background 0.2s;position:relative}
-.bn-item.active{background:var(--gold-4)}
-.bn-ico{font-size:22px;line-height:1}
-.bn-label{font-size:9px;font-weight:500;color:var(--ink-4)}
-.bn-item.active .bn-label{color:var(--gold)}
-.bn-dot{position:absolute;top:6px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--white)}
-
-/* SUCCESS OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(15,25,35,0.7);z-index:200;display:none;align-items:center;justify-content:center;padding:2rem}
+.hi{width:34px;height:34px;border-radius:9px;background:#FBF5E8;border:1px solid #F5E6C0;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.hn{font-size:13px;font-weight:600;color:#0F1923}
+.hm{font-size:11px;color:#718096;margin-top:1px}
+.ha{font-family:'JetBrains Mono',monospace;font-size:12px;color:#1A6B47;font-weight:700}
+.earn-hero{background:#0F1923;border-radius:16px;padding:1.25rem;margin-bottom:.875rem;text-align:center}
+.earn-label{font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.earn-amount{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:300;color:#fff;letter-spacing:-.03em;line-height:1}
+.earn-amount em{color:#D4A017;font-style:italic}
+.earn-period{font-size:12px;color:rgba(255,255,255,.35);margin-top:5px}
+.earn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.875rem}
+.ec{background:#fff;border:1px solid #E8E4DC;border-radius:11px;padding:.875rem;text-align:center}
+.en{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:400;color:#0F1923}
+.el{font-size:10px;font-family:'JetBrains Mono',monospace;color:#718096;margin-top:2px}
+.er{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #E8E4DC}
+.er:last-child{border-bottom:none;font-weight:700;font-size:14px;padding-top:8px;margin-top:4px}
+.er-l{color:#718096;font-weight:400}
+.er-v{font-family:'JetBrains Mono',monospace;color:#0F1923}
+.fi,.fsel,.fta{width:100%;border:1.5px solid #E8E4DC;border-radius:10px;padding:10px 12px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:#0F1923;background:#fff;outline:none}
+.fta{min-height:68px;resize:none;line-height:1.5}
+.fg{margin-bottom:.875rem}
+.fl{display:block;font-size:11px;font-weight:700;color:#0F1923;margin-bottom:4px}
+.part-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F4F2ED;border-radius:8px;margin-bottom:5px;font-size:12px}
+.part-name{flex:1;font-weight:600}
+.part-remove{color:#9B2335;cursor:pointer;font-size:15px;padding:0 3px}
+.bn{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #E8E4DC;padding:6px .875rem;z-index:100;gap:0}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;border-radius:9px;cursor:pointer;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;transition:background .2s}
+.bni.active{background:#FBF5E8}
+.bni-ico{font-size:20px;line-height:1}
+.bni-label{font-size:9px;font-weight:500;color:#718096}
+.bni.active .bni-label{color:#B8860B}
+.bni-dot{position:absolute;top:5px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:#9B2335;border:1.5px solid #fff}
+.overlay{position:fixed;inset:0;background:rgba(15,25,35,.75);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.show{display:flex}
-.overlay-card{background:var(--white);border-radius:24px;padding:2rem;width:100%;max-width:360px;text-align:center}
-.overlay-icon{width:64px;height:64px;border-radius:50%;background:var(--green-2);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;animation:popIn 0.4s var(--ease)}
-.overlay-title{font-family:var(--font-d);font-size:1.6rem;font-weight:300;color:var(--ink);margin-bottom:6px}
-.overlay-sub{font-size:14px;color:var(--ink-4);margin-bottom:1.5rem;line-height:1.6;font-weight:300}
-.overlay-ref{font-family:var(--font-m);font-size:11px;color:var(--ink-4);background:var(--off);display:inline-block;padding:5px 14px;border-radius:100px;margin-bottom:1.5rem;border:1px solid var(--border)}
-
-@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
-@keyframes popIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeUp 0.35s var(--ease)}
+.ov-card{background:#fff;border-radius:22px 22px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:480px;text-align:center}
+.ov-ico{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .875rem;font-size:26px}
+.ov-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:300;color:#0F1923;margin-bottom:5px;letter-spacing:-.02em}
+.ov-sub{font-size:13px;color:#718096;margin-bottom:1.25rem;line-height:1.6;font-weight:300}
+.ov-ref{font-family:'JetBrains Mono',monospace;font-size:11px;color:#718096;background:#F4F2ED;display:inline-block;padding:4px 12px;border-radius:100px;margin-bottom:1.25rem;border:1px solid #E8E4DC}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+body{display:block}
+.bn{display:flex}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<div class="app-header">
-  <div class="header-top">
-    <div class="header-logo">Smart<span>Services</span></div>
-    <div class="header-avatar">KA</div>
+<div id="topbar-mount"></div>
+<div class="duty-bar">
+  <div class="duty-info">
+    <div class="duty-dot dot-on" id="duty-dot"></div>
+    <div><div class="duty-text" id="duty-text">On Duty</div><div class="duty-sub">Since 8:00 AM · Zone A</div></div>
   </div>
-  <div class="header-greeting">Karim <em>Ahmed</em></div>
-  <div class="header-sub">AC Specialist · Employee ID: TEC-0041</div>
-  <div class="status-bar">
-    <div class="status-left">
-      <div class="status-dot sd-green"></div>
-      <div>
-        <div class="status-text">On Duty</div>
-        <div class="status-sub">Since 8:00 AM · Zone A</div>
-      </div>
-    </div>
-    <button class="toggle-btn toggle-active" onclick="toggleDuty(this)">On Duty</button>
-  </div>
+  <button class="toggle tog-on" id="duty-toggle" onclick="toggleDuty()">On Duty</button>
 </div>
-
-<!-- CONTENT -->
 <div class="content">
-
-  <!-- ── MY JOB ── -->
-  <div id="v-job" class="view active fade-in">
-
-    <!-- Active job hero card -->
-    <div class="active-job">
-      <div class="aj-header">
-        <div>
-          <div class="aj-title">AC Split Unit — Servicing</div>
-          <div class="aj-ref">#SS-2025-0847 · 2 Units</div>
-        </div>
-        <span class="aj-badge">● In Progress</span>
-      </div>
-      <div class="aj-body">
-        <div class="aj-info-row">
-          <div class="aj-info-icon">📍</div>
-          <div><div class="aj-info-label">Address</div>Apt 4B, Road 11, Baridhara, Dhaka</div>
-        </div>
-        <div class="aj-info-row">
-          <div class="aj-info-icon">👤</div>
-          <div><div class="aj-info-label">Customer</div>Rashida Khanam · 01711-000000</div>
-        </div>
-        <div class="aj-info-row">
-          <div class="aj-info-icon">🕘</div>
-          <div><div class="aj-info-label">Scheduled</div>Today · 2:30 PM · Est. 90 min</div>
-        </div>
-
-        <div class="aj-notes">📝 Customer notes: AC unit in master bedroom is making a rattling noise. Please check both bedroom and living room units. 3rd floor, no elevator — call before arrival.</div>
-
-        <!-- Job checklist -->
-        <div class="section-header">
-          <div class="section-title">Job Checklist</div>
-          <div class="section-action">2 / 5 done</div>
-        </div>
-        <div class="checklist" id="checklist">
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div class="check-label done">Arrived on site & verified identity</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div class="check-label done">Inspected both AC units</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Cleaned filters & coils</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Checked gas pressure & refill if needed</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Test run & customer sign-off</div></div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="status-actions">
-          <button class="btn-big btn-complete" onclick="showComplete()">
-            ✓ Mark Job Complete
-          </button>
-          <button class="btn-big btn-parts" onclick="showView('parts',null)">
-            🔩 Request Parts / Materials
-          </button>
-          <button class="btn-outline-big" onclick="showView('queue',null)">
-            View Next Job →
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick info cards -->
-    <div class="info-card">
-      <div class="info-card-title">📞 Contact</div>
-      <div style="display:flex;gap:8px">
-        <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-b)">📞 Call Customer</button>
-        <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-b)">📞 Call Admin</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ── QUEUE ── -->
-  <div id="v-queue" class="view fade-in">
-    <div class="section-header" style="margin-bottom:1rem">
-      <div class="section-title">Today's Job Queue</div>
-      <span class="badge b-blue">4 Jobs</span>
-    </div>
-
-    <div class="queue-card" style="border-color:var(--green-3);background:var(--green-2)">
-      <div class="queue-time">2:30<br>PM</div>
-      <div class="queue-divider"></div>
-      <div style="flex:1">
-        <div class="queue-title">AC Servicing — 2 Units</div>
-        <div class="queue-meta">Rashida Khanam · Baridhara</div>
-      </div>
-      <span class="badge b-green" style="margin-left:auto">Active</span>
-    </div>
-
-    <div class="queue-card">
-      <div class="queue-time">5:00<br>PM</div>
-      <div class="queue-divider"></div>
-      <div style="flex:1">
-        <div class="queue-title">AC Gas Refill</div>
-        <div class="queue-meta">Kamal Hossain · Uttara</div>
-      </div>
-      <span class="badge b-blue">Next</span>
-    </div>
-
-    <div class="queue-card" style="opacity:0.6">
-      <div class="queue-time">Tmrw<br>9 AM</div>
-      <div class="queue-divider"></div>
-      <div style="flex:1">
-        <div class="queue-title">AC Installation — 1 Unit</div>
-        <div class="queue-meta">Nordic Residences · Gulshan 2</div>
-      </div>
-      <span class="badge b-ink">Upcoming</span>
-    </div>
-
-    <div class="queue-card" style="opacity:0.6">
-      <div class="queue-time">Tmrw<br>1 PM</div>
-      <div class="queue-divider"></div>
-      <div style="flex:1">
-        <div class="queue-title">AC Filter Replacement</div>
-        <div class="queue-meta">Apex Ventures · Gulshan 1</div>
-      </div>
-      <span class="badge b-ink">Upcoming</span>
-    </div>
-
-    <div class="info-card" style="background:var(--gold-4);border-color:var(--gold-3)">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:20px">💡</div>
-        <div style="font-size:13px;color:var(--ink-2);line-height:1.5">Complete today's active job before being dispatched to the next one. Admin will confirm each assignment via SMS.</div>
+  <div id="v-job" class="view active">
+    <div id="active-job-card"></div>
+    <div class="card">
+      <div class="ch"><div class="ct">📞 Contact</div></div>
+      <div class="cb-p" style="display:flex;gap:8px">
+        <button class="btn-out" style="flex:1;padding:10px;font-size:12px">📞 Call Customer</button>
+        <button class="btn-out" style="flex:1;padding:10px;font-size:12px">📞 Call Admin</button>
       </div>
     </div>
   </div>
-
-  <!-- ── PARTS ── -->
-  <div id="v-parts" class="view fade-in">
-    <div class="section-header" style="margin-bottom:1rem">
-      <div class="section-title">Request Parts / Materials</div>
-      <span class="badge b-amber">Job #SS-2025-0847</span>
-    </div>
-
-    <div class="parts-form">
-      <div style="font-size:13px;color:var(--ink-3);margin-bottom:1rem;line-height:1.5">Request parts needed to complete your current job. Admin will approve and arrange delivery or pickup.</div>
-
-      <div class="form-group">
-        <label class="form-label">Part / Material</label>
-        <select class="form-select">
-          <option>Select part…</option>
-          <option>AC Cleaning Solution 500ml</option>
-          <option>AC Gas R22 (per kg)</option>
-          <option>AC Filter — Split 1.5 Ton</option>
-          <option>AC Remote Control</option>
-          <option>Capacitor 25+5 MFD</option>
-          <option>Other (describe below)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Quantity</label>
-        <input class="form-input" type="number" min="1" value="1" placeholder="1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Reason / Notes</label>
-        <textarea class="form-textarea" placeholder="E.g. AC gas pressure very low, needs refill. Customer approved extra charge."></textarea>
-      </div>
-      <button class="btn-big btn-start" onclick="addPart()" style="font-size:14px;padding:13px">+ Add to Request</button>
-    </div>
-
-    <div class="section-header">
-      <div class="section-title">Request List</div>
-    </div>
-    <div class="parts-list" id="partsList">
-      <div class="part-row"><div class="part-name">AC Gas R22</div><div class="part-qty">× 1 kg</div><span class="part-remove">✕</span></div>
-    </div>
-
-    <button class="btn-big btn-complete" onclick="submitParts()">
-      📤 Submit Parts Request
-    </button>
+  <div id="v-queue" class="view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem"><div class="sec-title">Today's Job Queue</div><span class="badge b-blue" id="queue-count">0 Jobs</span></div>
+    <div id="queue-list"></div>
   </div>
-
-  <!-- ── HISTORY ── -->
-  <div id="v-history" class="view fade-in">
-    <div class="section-header" style="margin-bottom:1rem">
-      <div class="section-title">Job History</div>
-      <span class="badge b-blue">This Month</span>
-    </div>
-
-    <div class="info-card" style="padding:0">
-      <div class="hist-row" style="padding:10px 14px"><div class="hist-ico">❄️</div><div style="flex:1"><div class="hist-title">AC Servicing — 2 Units</div><div class="hist-meta">Today · Rashida Khanam · Baridhara</div></div><div class="hist-right"><div class="hist-amt">৳1,200</div><div class="hist-status">Active</div></div></div>
-      <div class="hist-row" style="padding:10px 14px"><div class="hist-ico">❄️</div><div style="flex:1"><div class="hist-title">AC Gas Refill</div><div class="hist-meta">Yesterday · Kamal Hossain</div></div><div class="hist-right"><div class="hist-amt">৳900</div><div class="hist-status">Done</div></div></div>
-      <div class="hist-row" style="padding:10px 14px"><div class="hist-ico">❄️</div><div style="flex:1"><div class="hist-title">AC Installation</div><div class="hist-meta">20 Jun · Nordic Residences</div></div><div class="hist-right"><div class="hist-amt">৳3,500</div><div class="hist-status">Done</div></div></div>
-      <div class="hist-row" style="padding:10px 14px"><div class="hist-ico">❄️</div><div style="flex:1"><div class="hist-title">AC Filter Replacement</div><div class="hist-meta">18 Jun · Apex Ventures</div></div><div class="hist-right"><div class="hist-amt">৳600</div><div class="hist-status">Done</div></div></div>
-      <div class="hist-row" style="padding:10px 14px;border-bottom:none"><div class="hist-ico">❄️</div><div style="flex:1"><div class="hist-title">AC Servicing — 3 Units</div><div class="hist-meta">15 Jun · Baridhara Society</div></div><div class="hist-right"><div class="hist-amt">৳2,100</div><div class="hist-status">Done</div></div></div>
-    </div>
-
-    <div class="info-card" style="margin-top:1rem">
-      <div class="info-card-title">⭐ My Ratings</div>
-      <div style="display:flex;align-items:center;gap:1rem">
-        <div style="text-align:center"><div style="font-family:var(--font-d);font-size:2.5rem;font-weight:400;color:var(--ink)">4.9</div><div style="color:var(--gold-2);font-size:16px">★★★★★</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--font-m);margin-top:2px">127 jobs</div></div>
-        <div style="flex:1">
-          <div style="font-size:12px;margin-bottom:4px;display:flex;gap:6px;align-items:center"><span>5★</span><div style="flex:1;height:5px;background:var(--off);border-radius:3px"><div style="width:88%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--ink-4)">88%</span></div>
-          <div style="font-size:12px;margin-bottom:4px;display:flex;gap:6px;align-items:center"><span>4★</span><div style="flex:1;height:5px;background:var(--off);border-radius:3px"><div style="width:10%;height:100%;background:var(--gold-2);border-radius:3px"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--ink-4)">10%</span></div>
-          <div style="font-size:12px;display:flex;gap:6px;align-items:center"><span>3★</span><div style="flex:1;height:5px;background:var(--off);border-radius:3px"><div style="width:2%;height:100%;background:var(--border-2);border-radius:3px"></div></div><span style="font-family:var(--font-m);font-size:10px;color:var(--ink-4)">2%</span></div>
-        </div>
+  <div id="v-parts" class="view">
+    <div style="margin-bottom:.875rem"><div class="sec-title">Request Parts / Materials</div><div id="parts-job-ref" style="font-size:11px;color:#718096;font-family:'JetBrains Mono',monospace;margin-top:2px"></div></div>
+    <div class="card"><div class="cb-p">
+      <div class="fg"><label class="fl">Part / Material</label>
+        <select class="fsel"><option>Select part…</option><option>AC Cleaning Solution 500ml</option><option>AC Gas R22 (per kg)</option><option>AC Filter — Split 1.5 Ton</option><option>Capacitor 25+5 MFD</option><option>MCB 20A</option><option>Other (describe below)</option></select>
       </div>
-    </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fg"><label class="fl">Quantity</label><input class="fi" type="number" min="1" value="1"></div>
+        <div class="fg"><label class="fl">Unit</label><select class="fsel"><option>piece</option><option>kg</option><option>litre</option><option>meter</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">Reason</label><textarea class="fta" placeholder="Why is this part needed?"></textarea></div>
+      <button class="btn-big btn-parts" onclick="addPart()">+ Add to Request</button>
+    </div></div>
+    <div class="sec-hd"><div class="sec-title">Request List</div></div>
+    <div id="parts-list"></div>
+    <button class="btn-big btn-complete" style="margin-top:.5rem" onclick="submitParts()">📤 Submit Parts Request</button>
   </div>
-
-  <!-- ── EARNINGS ── -->
-  <div id="v-earnings" class="view fade-in">
-    <div class="earn-hero">
-      <div class="earn-label">June Earnings</div>
-      <div class="earn-amount">৳<em>28</em>,400</div>
-      <div class="earn-period">Jun 1 – Jun 22 · 18 jobs completed</div>
-    </div>
-
-    <div class="earn-breakdown">
-      <div class="earn-card"><div class="earn-card-num">18</div><div class="earn-card-label">Jobs Done</div></div>
-      <div class="earn-card"><div class="earn-card-num">4.9</div><div class="earn-card-label">Avg Rating</div></div>
-      <div class="earn-card"><div class="earn-card-num">94%</div><div class="earn-card-label">On Time</div></div>
-    </div>
-
-    <div class="info-card">
-      <div class="info-card-title">💰 Earnings Breakdown</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Base salary</span><span style="font-family:var(--font-m)">৳15,000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Job completion bonus</span><span style="font-family:var(--font-m)">৳9,000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Rating bonus (4.9★)</span><span style="font-family:var(--font-m)">৳3,000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">On-time bonus</span><span style="font-family:var(--font-m)">৳1,400</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:8px 0;color:var(--ink)"><span>Total June</span><span style="font-family:var(--font-m);color:var(--green)">৳28,400</span></div>
+  <div id="v-history" class="view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem"><div class="sec-title">Job History</div><span class="badge b-blue">This Month</span></div>
+    <div class="card"><div class="cb-p" id="hist-list" style="padding:.75rem 1.1rem"></div></div>
+    <div class="card" style="margin-top:.875rem"><div class="cb-p">
+      <div class="sec-title" style="margin-bottom:.75rem">⭐ My Ratings</div>
+      <div style="display:flex;align-items:center;gap:.875rem">
+        <div style="text-align:center"><div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:400;color:#0F1923">4.9</div><div style="color:#D4A017;font-size:14px">★★★★★</div><div style="font-size:11px;color:#718096;font-family:'JetBrains Mono',monospace;margin-top:1px" id="hist-count">0 jobs</div></div>
+        <div style="flex:1" id="rating-bars"></div>
       </div>
-    </div>
-
-    <div class="info-card" style="background:var(--green-2);border-color:var(--green-3)">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:22px">🏆</div>
-        <div><div style="font-size:13px;font-weight:700;color:var(--green)">Top Technician — June</div><div style="font-size:12px;color:var(--green);opacity:0.8;margin-top:2px">Highest rating in AC team. Keep it up!</div></div>
-      </div>
-    </div>
+    </div></div>
   </div>
-
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <button class="bn-item active" onclick="showView('job',this)">
-    <div class="bn-ico">🔧</div>
-    <div class="bn-label">My Job</div>
-    <div class="bn-dot"></div>
-  </button>
-  <button class="bn-item" onclick="showView('queue',this)">
-    <div class="bn-ico">📋</div>
-    <div class="bn-label">Queue</div>
-  </button>
-  <button class="bn-item" onclick="showView('parts',this)">
-    <div class="bn-ico">🔩</div>
-    <div class="bn-label">Parts</div>
-  </button>
-  <button class="bn-item" onclick="showView('history',this)">
-    <div class="bn-ico">📂</div>
-    <div class="bn-label">History</div>
-  </button>
-  <button class="bn-item" onclick="showView('earnings',this)">
-    <div class="bn-ico">💰</div>
-    <div class="bn-label">Earnings</div>
-  </button>
-</div>
-
-<!-- COMPLETE OVERLAY -->
-<div class="overlay" id="completeOverlay">
-  <div class="overlay-card">
-    <div class="overlay-icon">✓</div>
-    <div class="overlay-title">Job Complete!</div>
-    <div class="overlay-sub">Great work, Karim. Invoice #INV-0847 has been automatically generated and sent to the customer.</div>
-    <div class="overlay-ref">৳1,200 · AC Servicing · 2 Units</div>
-    <button class="btn-big btn-complete" onclick="closeOverlay()" style="font-size:14px;padding:13px">Back to Dashboard</button>
+  <div id="v-earnings" class="view">
+    <div class="earn-hero"><div class="earn-label">June Earnings</div><div class="earn-amount">৳<em>28</em>,400</div><div class="earn-period">Jun 1–22 · 18 jobs completed</div></div>
+    <div class="earn-grid">
+      <div class="ec"><div class="en">18</div><div class="el">Jobs Done</div></div>
+      <div class="ec"><div class="en">4.9</div><div class="el">Avg Rating</div></div>
+      <div class="ec"><div class="en">94%</div><div class="el">On Time</div></div>
+    </div>
+    <div class="card"><div class="cb-p">
+      <div class="sec-title" style="margin-bottom:.75rem">💰 Breakdown</div>
+      <div class="er"><span class="er-l">Base salary</span><span class="er-v">৳15,000</span></div>
+      <div class="er"><span class="er-l">Job bonus</span><span class="er-v">৳9,000</span></div>
+      <div class="er"><span class="er-l">Rating bonus</span><span class="er-v">৳3,000</span></div>
+      <div class="er"><span class="er-l">On-time bonus</span><span class="er-v">৳1,400</span></div>
+      <div class="er"><span class="er-l">Total June</span><span class="er-v" style="color:#1A6B47">৳28,400</span></div>
+    </div></div>
   </div>
 </div>
-
-<!-- PARTS OVERLAY -->
-<div class="overlay" id="partsOverlay">
-  <div class="overlay-card">
-    <div class="overlay-icon" style="background:var(--amber-2);font-size:24px">📤</div>
-    <div class="overlay-title">Request Sent!</div>
-    <div class="overlay-sub">Your parts request has been sent to the admin. You will receive an SMS once it's approved and ready.</div>
-    <div class="overlay-ref">AC Gas R22 × 1 kg · Job #0847</div>
-    <button class="btn-big btn-complete" onclick="closePartsOverlay()" style="font-size:14px;padding:13px;background:var(--amber)">Back to Job</button>
+<div class="bn">
+  <button class="bni active" onclick="sv('job',this)"><div class="bni-ico">🔧</div><div class="bni-label">My Job</div><div class="bni-dot"></div></button>
+  <button class="bni" onclick="sv('queue',this)"><div class="bni-ico">📋</div><div class="bni-label">Queue</div></button>
+  <button class="bni" onclick="sv('parts',this)"><div class="bni-ico">🔩</div><div class="bni-label">Parts</div></button>
+  <button class="bni" onclick="sv('history',this)"><div class="bni-ico">📂</div><div class="bni-label">History</div></button>
+  <button class="bni" onclick="sv('earnings',this)"><div class="bni-ico">💰</div><div class="bni-label">Earnings</div></button>
+</div>
+<div class="overlay" id="complete-overlay">
+  <div class="ov-card">
+    <div class="ov-ico" style="background:#E8F5EE">✓</div>
+    <div class="ov-title">Job Complete!</div>
+    <div class="ov-sub">Invoice has been automatically generated and sent to the customer.</div>
+    <div class="ov-ref" id="complete-ref">৳0 · Job completed</div>
+    <button class="btn-big btn-complete" onclick="closeOverlay('complete-overlay')" style="margin-bottom:0">Back to Dashboard</button>
   </div>
 </div>
-
+<div class="overlay" id="parts-overlay">
+  <div class="ov-card">
+    <div class="ov-ico" style="background:#FFF3E0;font-size:24px">📤</div>
+    <div class="ov-title">Request Sent!</div>
+    <div class="ov-sub">Your parts request has been sent to admin. You will receive an SMS once approved.</div>
+    <div class="ov-ref">Parts Request Submitted</div>
+    <button class="btn-big btn-complete" onclick="closeOverlay('parts-overlay')" style="background:#C27B2A;margin-bottom:0">Back to Job</button>
+  </div>
+</div>
 <script>
-function showView(name,el){
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  document.getElementById('v-'+name).classList.add('active');
-  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active')});
+const user = SS.requireAuth('technician');
+if(!user) throw new Error('Not authenticated');
+SS.seedIfEmpty();
+document.getElementById('topbar-mount').innerHTML = SS.renderTopbar(user, 'Technician App', 1);
+
+const views=['job','queue','parts','history','earnings'];
+function sv(name,el){
+  views.forEach(v=>document.getElementById('v-'+v)?.classList.remove('active'));
+  document.getElementById('v-'+name)?.classList.add('active');
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
   if(el)el.classList.add('active');
+  if(name==='job')renderJob();
+  if(name==='queue')renderQueue();
+  if(name==='history')renderHistory();
   window.scrollTo(0,0);
 }
+
+function renderJob(){
+  const jobs=SS.getJobs();
+  const myJob=jobs.find(j=>j.techId===user.id&&j.status==='in_progress');
+  if(!myJob){
+    document.getElementById('active-job-card').innerHTML=`<div style="background:#fff;border:1px solid #E8E4DC;border-radius:18px;padding:2rem;text-align:center;margin-bottom:1rem"><div style="font-size:2rem;margin-bottom:.75rem">✓</div><div style="font-family:'Fraunces',serif;font-size:1.2rem;color:#0F1923;margin-bottom:5px">No Active Job</div><div style="font-size:13px;color:#718096">You have no job in progress right now. Check your queue for upcoming jobs.</div></div>`;
+    return;
+  }
+  document.getElementById('parts-job-ref').textContent='Linked to: '+myJob.id;
+  const steps=[
+    {l:'Request received',done:true},{l:'Admin confirmed',done:true},{l:'In progress — you are here',done:true,active:true},{l:'Job complete',done:false}
+  ];
+  document.getElementById('active-job-card').innerHTML=`
+    <div class="active-job">
+      <div class="aj-head"><div><div class="aj-title">${myJob.service}</div><div class="aj-ref">${myJob.id} · ${myJob.detail||''}</div></div>
+        <span class="badge b-amber">● In Progress</span></div>
+      <div class="aj-body">
+        <div class="ai"><span class="ai-ico">📍</span><div><div class="ai-label">Address</div>${myJob.address}</div></div>
+        <div class="ai"><span class="ai-ico">👤</span><div><div class="ai-label">Customer</div>${myJob.customerName} · 01711-XXXXXX</div></div>
+        <div class="ai"><span class="ai-ico">🕘</span><div><div class="ai-label">Scheduled</div>${myJob.date} · ${myJob.slot} · Est. ${SS.fmt(myJob.estimate)}</div></div>
+        <div class="notes">📝 Customer notes: Please call before arriving. Check all units thoroughly.</div>
+        <div class="sec-hd"><div class="sec-title">Job Checklist</div><div class="sec-prog" id="check-prog">0 / 5 done</div></div>
+        <div class="checklist" id="checklist">
+          <div class="check-item" onclick="toggleCheck(this)"><div class="cb">✓</div><div class="cl done">Arrived & verified identity with customer</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="cb">✓</div><div class="cl done">Inspected all units</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="cb"></div><div class="cl">Cleaned filters & coils</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="cb"></div><div class="cl">Checked gas pressure</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="cb"></div><div class="cl">Test run & customer sign-off</div></div>
+        </div>
+        <button class="btn-big btn-complete" onclick="completeJob('${myJob.id}')">✓ Mark Job Complete</button>
+        <button class="btn-big btn-parts" onclick="sv('parts',document.querySelectorAll('.bni')[2])">🔩 Request Parts / Materials</button>
+        <button class="btn-out">View Job Details</button>
+      </div>
+    </div>`;
+  updateCheckProg();
+}
+
 function toggleCheck(item){
-  var box=item.querySelector('.check-box');
-  var label=item.querySelector('.check-label');
-  var isChecked=box.classList.contains('checked');
-  if(isChecked){box.classList.remove('checked');box.textContent='';label.classList.remove('done');}
-  else{box.classList.add('checked');box.textContent='✓';label.classList.add('done');}
-  updateChecklist();
+  const b=item.querySelector('.cb'), l=item.querySelector('.cl');
+  const c=b.classList.contains('checked');
+  if(c){b.classList.remove('checked');b.textContent='';l.classList.remove('done');}
+  else{b.classList.add('checked');b.textContent='✓';l.classList.add('done');}
+  updateCheckProg();
 }
-function updateChecklist(){
-  var total=document.querySelectorAll('#checklist .check-item').length;
-  var done=document.querySelectorAll('#checklist .check-box.checked').length;
-  document.querySelector('.section-action').textContent=done+' / '+total+' done';
+function updateCheckProg(){
+  const total=document.querySelectorAll('#checklist .check-item').length;
+  const done=document.querySelectorAll('#checklist .cb.checked').length;
+  const el=document.getElementById('check-prog');
+  if(el)el.textContent=done+' / '+total+' done';
 }
-function showComplete(){
-  document.getElementById('completeOverlay').classList.add('show');
+
+function completeJob(jobId){
+  const jobs=SS.getJobs(), job=jobs.find(j=>j.id===jobId);
+  if(job){
+    job.status='completed';
+    const invs=SS.getInvoices();
+    invs.push({id:SS.newId('INV'),jobId:jobId,customerId:job.customerId,customerName:job.customerName,desc:job.service+' — Completed',amount:job.estimate,type:'adhoc',status:'unpaid',createdAt:Date.now()});
+    SS.saveInvoices(invs);
+  }
+  SS.saveJobs(jobs);
+  document.getElementById('complete-ref').textContent=SS.fmt(job?.estimate||0)+' · '+jobId;
+  document.getElementById('complete-overlay').classList.add('show');
 }
-function closeOverlay(){
-  document.getElementById('completeOverlay').classList.remove('show');
+
+function renderQueue(){
+  const jobs=SS.getJobs().filter(j=>j.techId===user.id||j.status==='in_progress');
+  document.getElementById('queue-count').textContent=jobs.length+' Jobs';
+  document.getElementById('queue-list').innerHTML=jobs.length===0?'<div style="text-align:center;padding:2rem;color:#718096;font-size:13px">No jobs in queue</div>':
+    jobs.map(j=>`<div class="queue-card">
+      <div class="qc-time">${j.slot?.slice(0,3)||'TBD'}</div>
+      <div class="qc-body"><div class="qc-title">${j.service}</div><div class="qc-meta">${j.customerName} · ${j.address?.split(',')[0]}</div></div>
+      ${SS.statusBadge(j.status)}
+    </div>`).join('');
 }
-function submitParts(){
-  document.getElementById('partsOverlay').classList.add('show');
+
+function renderHistory(){
+  const jobs=SS.getJobs().filter(j=>j.techId===user.id&&j.status==='completed');
+  document.getElementById('hist-list').innerHTML=jobs.length===0?'<div style="padding:.5rem;color:#718096;font-size:13px;text-align:center">No completed jobs yet</div>':
+    jobs.map(j=>`<div class="hist-row"><div class="hi">❄️</div><div style="flex:1"><div class="hn">${j.service}</div><div class="hm">${j.date} · ${j.customerName}</div></div><div class="ha">${SS.fmt(j.estimate)}</div></div>`).join('');
+  document.getElementById('hist-count').textContent=jobs.length+' jobs';
+  document.getElementById('rating-bars').innerHTML=[5,4,3].map(n=>`<div style="font-size:12px;margin-bottom:4px;display:flex;gap:5px;align-items:center"><span>${n}★</span><div style="flex:1;height:5px;background:#F4F2ED;border-radius:3px"><div style="width:${n===5?88:n===4?10:2}%;height:100%;background:#D4A017;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#718096">${n===5?88:n===4?10:2}%</span></div>`).join('');
 }
-function closePartsOverlay(){
-  document.getElementById('partsOverlay').classList.remove('show');
-  showView('job',document.querySelector('.bn-item'));
-}
+
 function addPart(){
-  var list=document.getElementById('partsList');
-  var row=document.createElement('div');
+  const list=document.getElementById('parts-list');
+  const row=document.createElement('div');
   row.className='part-row';
-  row.innerHTML='<div class="part-name">AC Cleaning Solution</div><div class="part-qty">× 2 bottles</div><span class="part-remove" onclick="this.parentNode.remove()">✕</span>';
+  row.innerHTML='<div class="part-name">AC Cleaning Solution × 2</div><span class="part-remove" onclick="this.parentNode.remove()">✕</span>';
   list.appendChild(row);
 }
-function toggleDuty(btn){
-  if(btn.classList.contains('toggle-active')){btn.classList.remove('toggle-active');btn.classList.add('toggle-inactive');btn.textContent='Off Duty';}
-  else{btn.classList.remove('toggle-inactive');btn.classList.add('toggle-active');btn.textContent='On Duty';}
+function submitParts(){ document.getElementById('parts-overlay').classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); renderJob(); }
+function toggleDuty(){
+  const btn=document.getElementById('duty-toggle'), dot=document.getElementById('duty-dot'), txt=document.getElementById('duty-text');
+  const on=btn.classList.contains('tog-on');
+  btn.classList.toggle('tog-on',!on); btn.classList.toggle('tog-off',on);
+  dot.classList.toggle('dot-on',!on); dot.classList.toggle('dot-off',on);
+  btn.textContent=on?'Off Duty':'On Duty'; txt.textContent=on?'Off Duty':'On Duty';
 }
+renderJob();
+SS.renderNotifs(SS.getJobs(),user);
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#ss-user-menu')&&!e.target.closest('[onclick*="toggleUserMenu"]')&&!e.target.closest('#ss-notif-panel')){
+    const m=document.getElementById('ss-user-menu'),n=document.getElementById('ss-notif-panel');
+    if(m)m.style.display='none';if(n)n.style.display='none';
+  }
+});
 </script>
 </body>
 </html>

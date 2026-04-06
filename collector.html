@@ -1,459 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartServices — Collector App</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
+<title>SmartServices — Collector</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="shared.js"></script>
 <style>
-:root{
-  --ink:#0F1923;--ink-2:#2C3E50;--ink-3:#4A5568;--ink-4:#718096;
-  --gold:#B8860B;--gold-2:#D4A017;--gold-3:#F5E6C0;--gold-4:#FBF5E8;
-  --cream:#FAFAF7;--white:#FFFFFF;--off:#F4F2ED;
-  --border:#E8E4DC;--border-2:#D4CFC4;
-  --green:#1A6B47;--green-2:#E8F5EE;--green-3:#D1EDDF;
-  --red:#9B2335;--red-2:#FDEAEC;
-  --blue:#1A4A8A;--blue-2:#EAF0FB;
-  --amber:#C27B2A;--amber-2:#FFF3E0;
-  --font-d:'Fraunces',serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;
-  --ease:cubic-bezier(0.16,1,0.3,1);
-}
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px}
-body{font-family:var(--font-b);background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;max-width:420px;margin:0 auto;min-height:100vh;padding-bottom:80px}
-
-/* HEADER */
-.app-header{background:var(--ink);padding:1.25rem 1.25rem 1rem;position:sticky;top:0;z-index:50}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.header-logo{font-family:var(--font-d);font-size:16px;font-weight:600;color:var(--white)}
-.header-logo span{color:var(--gold-2)}
-.header-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:700}
-.header-greeting{font-family:var(--font-d);font-size:1.4rem;font-weight:300;color:var(--white);margin-bottom:2px;letter-spacing:-0.02em}
-.header-greeting em{font-style:italic;color:var(--gold-2)}
-.header-sub{font-size:12px;color:rgba(255,255,255,0.4)}
-.today-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:0.875rem}
-.today-item{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;text-align:center}
-.today-num{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:var(--white);line-height:1}
-.today-num.gold{color:var(--gold-2)}
-.today-num.green{color:#5ECA8A}
-.today-label{font-size:9px;font-family:var(--font-m);color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px}
-
-/* CONTENT */
-.content{padding:1.25rem}
-
-/* VIEW */
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F4F2ED;color:#0F1923;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;padding-bottom:72px}
+.content{padding:1.1rem}
 .view{display:none}.view.active{display:block}
-
-/* NEXT COLLECTION — hero */
-.next-card{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:1.25rem;box-shadow:0 4px 20px rgba(15,25,35,0.06)}
-.nc-header{background:linear-gradient(135deg,var(--ink),#1A2E3F);padding:1.25rem}
-.nc-eyebrow{font-family:var(--font-m);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px}
-.nc-time{font-family:var(--font-d);font-size:2rem;font-weight:300;color:var(--white);letter-spacing:-0.02em;line-height:1;margin-bottom:2px}
-.nc-time em{color:var(--gold-2);font-style:italic}
-.nc-date{font-size:12px;color:rgba(255,255,255,0.4)}
-.nc-body{padding:1.25rem}
-.nc-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:var(--ink-2)}
-.nc-icon{font-size:17px;flex-shrink:0;margin-top:1px}
-.nc-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em}
-.nc-amount{font-family:var(--font-d);font-size:2.4rem;font-weight:400;color:var(--ink);letter-spacing:-0.03em;margin-bottom:4px}
-.nc-amount-label{font-size:12px;color:var(--ink-4);margin-bottom:1.25rem}
-.nc-invoices{background:var(--off);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--ink-3);margin-bottom:1.25rem;border:1px solid var(--border)}
-.nc-inv-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)}
-.nc-inv-row:last-child{border-bottom:none}
-.nc-inv-desc{color:var(--ink-3)}
-.nc-inv-amt{font-family:var(--font-m);color:var(--ink);font-weight:600}
-
-/* BIG CONFIRM BUTTON */
-.btn-confirm{width:100%;padding:20px;border-radius:16px;background:var(--green);color:var(--white);font-size:17px;font-weight:700;border:none;cursor:pointer;font-family:var(--font-b);transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 24px rgba(26,107,71,0.25);letter-spacing:0.02em}
-.btn-confirm:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(26,107,71,0.2)}
-.btn-confirm:hover{background:#1d7a53;box-shadow:0 8px 28px rgba(26,107,71,0.35)}
-.btn-secondary{width:100%;padding:15px;border-radius:16px;background:transparent;color:var(--ink-3);font-size:14px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:8px}
-.btn-secondary:hover{border-color:var(--ink-3);color:var(--ink)}
-.btn-skip{width:100%;padding:13px;border-radius:16px;background:var(--red-2);color:var(--red);font-size:14px;font-weight:600;border:1.5px solid #F5B8C0;cursor:pointer;font-family:var(--font-b);transition:all 0.2s;margin-top:8px}
-.btn-skip:hover{background:#FBD4D9}
-
-/* SCHEDULE LIST */
-.schedule-section{margin-bottom:1.25rem}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
-.section-title{font-size:13px;font-weight:700;color:var(--ink)}
-.section-badge{font-size:10px;font-family:var(--font-m);padding:3px 9px;border-radius:100px}
-
-.sched-card{background:var(--white);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;transition:all 0.2s;cursor:pointer}
-.sched-card:hover{border-color:var(--gold-3);transform:translateY(-1px)}
-.sched-card.done{opacity:0.7}
-.sched-inner{display:flex;align-items:stretch;gap:0}
-.sched-time-col{padding:12px 10px;background:var(--off);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:56px}
-.sched-time{font-family:var(--font-m);font-size:11px;color:var(--ink);font-weight:700;text-align:center;line-height:1.3}
-.sched-body{padding:12px;flex:1}
-.sched-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
-.sched-addr{font-size:11px;color:var(--ink-4);margin-bottom:6px}
-.sched-footer{display:flex;align-items:center;justify-content:space-between}
-.sched-amt{font-family:var(--font-m);font-size:13px;font-weight:700}
-.sched-amt.green{color:var(--green)}
-.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:var(--font-m)}
-.b-green{background:var(--green-2);color:var(--green)}
-.b-amber{background:var(--amber-2);color:var(--amber)}
-.b-blue{background:var(--blue-2);color:var(--blue)}
-.b-red{background:var(--red-2);color:var(--red)}
-.b-ink{background:var(--off);color:var(--ink-2);border:1px solid var(--border)}
-
-/* HISTORY */
-.hist-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:0;overflow:hidden}
-.hist-row{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border)}
+.status-bar{background:#fff;border-bottom:1px solid #E8E4DC;padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between}
+.stat-info{display:flex;align-items:center;gap:8px}
+.stat-dot{width:8px;height:8px;border-radius:50%;background:#C27B2A;animation:pulse 2s infinite}
+.stat-text{font-size:13px;font-weight:600;color:#0F1923}
+.stat-sub{font-size:11px;color:#718096;font-family:'JetBrains Mono',monospace}
+.tog{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:#C27B2A;color:#fff}
+.hero-strip{background:#0F1923;border-radius:16px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;text-align:center}
+.hs-label{font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.hs-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:300;color:#fff;line-height:1;letter-spacing:-.02em}
+.hs-val.gold{color:#D4A017}
+.hs-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.route-card{background:#fff;border:1px solid #E8E4DC;border-radius:16px;margin-bottom:.875rem;overflow:hidden;box-shadow:0 3px 12px rgba(15,25,35,.05)}
+.rc-num{background:#C27B2A;color:#fff;font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rc-head{display:flex;align-items:center;gap:10px;padding:.875rem 1rem;border-bottom:1px solid #F4F2ED}
+.rc-name{font-size:14px;font-weight:700;color:#0F1923}
+.rc-addr{font-size:11px;color:#718096;margin-top:1px}
+.rc-body{padding:.875rem 1rem}
+.rc-row{display:flex;align-items:center;gap:9px;margin-bottom:6px;font-size:13px;color:#2C3E50}
+.rc-icon{font-size:14px;flex-shrink:0;width:18px;text-align:center}
+.rc-amount{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:300;color:#0F1923;margin:6px 0 2px;letter-spacing:-.02em}
+.rc-inv{font-size:11px;color:#718096;font-family:'JetBrains Mono',monospace;margin-bottom:.875rem}
+.btn-row{display:flex;gap:7px}
+.btn-collect{flex:1;padding:12px;border-radius:100px;background:#0F1923;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-collect:hover{background:#2C3E50}
+.btn-collect:active{transform:scale(.97)}
+.btn-nav{padding:12px;border-radius:100px;background:#FFF3E0;color:#C27B2A;font-size:13px;font-weight:600;border:1.5px solid #F5D6A0;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap}
+.btn-reschedule{flex:1;padding:12px;border-radius:100px;background:transparent;color:#718096;font-size:12px;font-weight:500;border:1.5px solid #E8E4DC;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace}
+.b-green{background:#E8F5EE;color:#1A6B47}.b-amber{background:#FFF3E0;color:#C27B2A}.b-blue{background:#EAF0FB;color:#1A4A8A}.b-red{background:#FDEAEC;color:#9B2335}
+.section-title{font-size:13px;font-weight:700;color:#0F1923;margin-bottom:.625rem}
+.card{background:#fff;border:1px solid #E8E4DC;border-radius:14px;margin-bottom:.875rem}
+.ch{padding:.875rem 1.1rem;border-bottom:1px solid #E8E4DC;display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:13px;font-weight:700;color:#0F1923}
+.cb-p{padding:1.1rem}
+.hist-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #E8E4DC}
 .hist-row:last-child{border-bottom:none}
-.hist-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.hico-green{background:var(--green-2);border:1px solid var(--green-3)}
-.hico-red{background:var(--red-2);border:1px solid #F5B8C0}
-.hist-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:1px}
-.hist-meta{font-size:11px;color:var(--ink-4)}
-.hist-right{margin-left:auto;text-align:right;flex-shrink:0}
-.hist-amt{font-family:var(--font-m);font-size:13px;font-weight:700}
-.hist-amt.green{color:var(--green)}
-.hist-amt.red{color:var(--red)}
-.hist-time{font-size:10px;color:var(--ink-4);margin-top:1px}
-
-/* EARNINGS */
-.earn-hero{background:var(--ink);border-radius:18px;padding:1.5rem;margin-bottom:1rem;text-align:center}
-.earn-label{font-size:11px;font-family:var(--font-m);color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
-.earn-amount{font-family:var(--font-d);font-size:3rem;font-weight:300;color:var(--white);letter-spacing:-0.03em;line-height:1}
-.earn-amount em{color:var(--gold-2);font-style:italic}
-.earn-period{font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px}
-.earn-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
-.earn-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:0.875rem;text-align:center}
-.earn-card-num{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:var(--ink)}
-.earn-card-label{font-size:10px;font-family:var(--font-m);color:var(--ink-4);margin-top:2px}
-
-/* INFO CARD */
-.info-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.info-card-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--white);border-top:1px solid var(--border);padding:6px 1rem;display:flex;z-index:100}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:var(--font-b);transition:background 0.2s;position:relative}
-.bn-item.active{background:var(--gold-4)}
-.bn-ico{font-size:22px;line-height:1}
-.bn-label{font-size:9px;font-weight:500;color:var(--ink-4)}
-.bn-item.active .bn-label{color:var(--gold)}
-.bn-dot{position:absolute;top:6px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--white)}
-
-/* OVERLAYS */
-.overlay{position:fixed;inset:0;background:rgba(15,25,35,0.75);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0}
+.hav{width:34px;height:34px;border-radius:50%;background:#0F1923;color:#D4A017;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:12px;font-weight:700;flex-shrink:0}
+.hn{font-size:13px;font-weight:600;color:#0F1923}
+.hm{font-size:11px;color:#718096;margin-top:1px}
+.ha{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1A6B47;font-weight:700}
+.earn-hero{background:#0F1923;border-radius:16px;padding:1.25rem;margin-bottom:.875rem;text-align:center}
+.earn-label{font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.earn-amount{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:300;color:#fff;letter-spacing:-.03em;line-height:1}
+.earn-amount em{color:#D4A017;font-style:italic}
+.earn-period{font-size:12px;color:rgba(255,255,255,.35);margin-top:5px}
+.earn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.875rem}
+.ec{background:#fff;border:1px solid #E8E4DC;border-radius:11px;padding:.875rem;text-align:center}
+.en{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:400;color:#0F1923}
+.el{font-size:10px;font-family:'JetBrains Mono',monospace;color:#718096;margin-top:2px}
+.er{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #E8E4DC}
+.er:last-child{border-bottom:none;font-weight:700;font-size:14px;padding-top:8px;margin-top:4px}
+.er-l{color:#718096;font-weight:400}
+.er-v{font-family:'JetBrains Mono',monospace;color:#0F1923}
+.bn{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #E8E4DC;padding:6px .875rem;z-index:100;display:flex}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;border-radius:9px;cursor:pointer;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;transition:background .2s}
+.bni.active{background:#FFF3E0}
+.bni-ico{font-size:20px;line-height:1}
+.bni-label{font-size:9px;font-weight:500;color:#718096}
+.bni.active .bni-label{color:#C27B2A}
+.overlay{position:fixed;inset:0;background:rgba(15,25,35,.75);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.show{display:flex}
-.overlay-card{background:var(--white);border-radius:24px 24px 0 0;padding:2rem 1.5rem;width:100%;max-width:420px;text-align:center;animation:slideUp 0.4s var(--ease)}
-.overlay-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;animation:popIn 0.4s var(--ease)}
-.overlay-title{font-family:var(--font-d);font-size:1.6rem;font-weight:300;color:var(--ink);margin-bottom:6px}
-.overlay-sub{font-size:14px;color:var(--ink-4);margin-bottom:1.5rem;line-height:1.6;font-weight:300}
-.overlay-amount{font-family:var(--font-d);font-size:2.5rem;font-weight:400;color:var(--green);letter-spacing:-0.03em;margin-bottom:4px}
-.overlay-ref{font-family:var(--font-m);font-size:11px;color:var(--ink-4);background:var(--off);display:inline-block;padding:5px 14px;border-radius:100px;margin-bottom:1.5rem;border:1px solid var(--border)}
-.cash-confirm-input{background:var(--off);border:2px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1.25rem;text-align:left}
-.cci-label{font-size:11px;font-family:var(--font-m);color:var(--ink-4);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em}
-.cci-value{font-family:var(--font-d);font-size:2rem;font-weight:400;color:var(--ink)}
-.cci-note{font-size:12px;color:var(--ink-3);margin-top:4px}
-.photo-prompt{background:var(--blue-2);border:1px solid #B5CFF4;border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:13px;color:var(--blue);line-height:1.6;display:flex;align-items:center;gap:10px}
-
-@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
-@keyframes popIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeUp 0.35s var(--ease)}
+.ov-card{background:#fff;border-radius:22px 22px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:480px}
+.ov-ico{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .875rem;font-size:26px}
+.ov-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;color:#0F1923;margin-bottom:5px;letter-spacing:-.02em;text-align:center}
+.ov-sub{font-size:13px;color:#718096;margin-bottom:1.25rem;line-height:1.6;font-weight:300;text-align:center}
+.ov-detail{background:#F4F2ED;border:1px solid #E8E4DC;border-radius:12px;padding:1rem;margin-bottom:1.25rem}
+.od-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+.od-l{color:#718096}
+.od-v{font-weight:600;color:#0F1923;font-family:'JetBrains Mono',monospace}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:1.1rem}
+.pm{border:1.5px solid #E8E4DC;border-radius:11px;padding:.75rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;background:#fff}
+.pm:hover,.pm.selected{border-color:#C27B2A;background:#FFF3E0}
+.pm-icon{font-size:18px}
+.pm-name{font-size:12px;font-weight:700;color:#0F1923}
+.btn-confirm{width:100%;padding:14px;border-radius:13px;background:#C27B2A;color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:7px}
+.btn-cancel{width:100%;padding:12px;border-radius:13px;background:transparent;color:#718096;font-size:13px;font-weight:500;border:1.5px solid #E8E4DC;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.reschedule-card{background:#fff;border-radius:22px 22px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:480px}
+.fi,.fsel{width:100%;border:1.5px solid #E8E4DC;border-radius:10px;padding:10px 12px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:#0F1923;background:#fff;outline:none;margin-bottom:.75rem}
+.success-card{background:#fff;border-radius:22px 22px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:480px;text-align:center}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<div class="app-header">
-  <div class="header-top">
-    <div class="header-logo">Smart<span>Services</span></div>
-    <div class="header-avatar">MK</div>
-  </div>
-  <div class="header-greeting">Mostofa <em>Karim</em></div>
-  <div class="header-sub">Cash Collector · Zone A · COL-0012</div>
-  <div class="today-strip">
-    <div class="today-item">
-      <div class="today-num">5</div>
-      <div class="today-label">Scheduled</div>
-    </div>
-    <div class="today-item">
-      <div class="today-num green">2</div>
-      <div class="today-label">Collected</div>
-    </div>
-    <div class="today-item">
-      <div class="today-num gold">৳51,500</div>
-      <div class="today-label">Remaining</div>
+<div id="topbar-mount"></div>
+<div class="status-bar">
+  <div class="stat-info">
+    <div class="stat-dot"></div>
+    <div>
+      <div class="stat-text">Active Route</div>
+      <div class="stat-sub">Zone A · <span id="route-count">0</span> stops today</div>
     </div>
   </div>
+  <button class="tog" onclick="refreshRoute()">🔄 Refresh</button>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
 
-  <!-- ── TODAY ── -->
-  <div id="v-today" class="view active fade-in">
-
-    <!-- Next collection hero -->
-    <div class="next-card">
-      <div class="nc-header">
-        <div class="nc-eyebrow">Next Collection</div>
-        <div class="nc-time"><em>2:00</em> PM</div>
-        <div class="nc-date">Today · Sunday 22 June 2025</div>
-      </div>
-      <div class="nc-body">
-        <div class="nc-row">
-          <div class="nc-icon">👤</div>
-          <div><div class="nc-label">Customer</div>Nadia Rahman · 01712-000001</div>
-        </div>
-        <div class="nc-row">
-          <div class="nc-icon">📍</div>
-          <div><div class="nc-label">Address</div>Apt 6C, Road 5, Mohammadpur, Dhaka</div>
-        </div>
-
-        <div class="nc-amount">৳2,200</div>
-        <div class="nc-amount-label">Cash to collect</div>
-
-        <div class="nc-invoices">
-          <div class="nc-inv-row"><div class="nc-inv-desc">Pest Control — Full Apartment</div><div class="nc-inv-amt">৳2,200</div></div>
-        </div>
-
-        <button class="btn-confirm" onclick="showCollectOverlay()">
-          ✓ Confirm Cash Collected
-        </button>
-        <button class="btn-secondary" onclick="showCantCollect()">Can't Collect — Reschedule</button>
-      </div>
+  <!-- TODAY'S ROUTE -->
+  <div id="v-route" class="view active">
+    <div class="hero-strip">
+      <div><div class="hs-label">Stops</div><div class="hs-val" id="h-stops">0</div><div class="hs-sub">Today</div></div>
+      <div><div class="hs-label">To Collect</div><div class="hs-val gold" id="h-amount">৳0</div><div class="hs-sub">Pending</div></div>
+      <div><div class="hs-label">Collected</div><div class="hs-val" id="h-done">0</div><div class="hs-sub">Done</div></div>
     </div>
-
-    <!-- Rest of schedule -->
-    <div class="schedule-section">
-      <div class="section-header">
-        <div class="section-title">Today's Full Schedule</div>
-        <span class="badge b-blue">5 stops</span>
-      </div>
-
-      <div class="sched-card done">
-        <div class="sched-inner">
-          <div class="sched-time-col"><div class="sched-time">9:00<br>AM</div></div>
-          <div class="sched-body">
-            <div class="sched-name">Rashida Khanam</div>
-            <div class="sched-addr">Apt 4B, Baridhara</div>
-            <div class="sched-footer"><div class="sched-amt green">৳1,200</div><span class="badge b-green">Done ✓</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sched-card done">
-        <div class="sched-inner">
-          <div class="sched-time-col"><div class="sched-time">11:00<br>AM</div></div>
-          <div class="sched-body">
-            <div class="sched-name">Kamal Hossain</div>
-            <div class="sched-addr">House 12, Uttara</div>
-            <div class="sched-footer"><div class="sched-amt green">৳8,500</div><span class="badge b-green">Done ✓</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sched-card" style="border-color:var(--amber);box-shadow:0 0 0 2px rgba(194,123,42,0.1)">
-        <div class="sched-inner">
-          <div class="sched-time-col" style="background:var(--amber-2)"><div class="sched-time" style="color:var(--amber)">2:00<br>PM</div></div>
-          <div class="sched-body">
-            <div class="sched-name">Nadia Rahman</div>
-            <div class="sched-addr">Apt 6C, Mohammadpur</div>
-            <div class="sched-footer"><div class="sched-amt" style="color:var(--amber)">৳2,200</div><span class="badge b-amber">● Now</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sched-card">
-        <div class="sched-inner">
-          <div class="sched-time-col"><div class="sched-time">4:00<br>PM</div></div>
-          <div class="sched-body">
-            <div class="sched-name">Baridhara Society</div>
-            <div class="sched-addr">Road 11, Baridhara</div>
-            <div class="sched-footer"><div class="sched-amt">৳48,000</div><span class="badge b-blue">Upcoming</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sched-card">
-        <div class="sched-inner">
-          <div class="sched-time-col"><div class="sched-time">5:30<br>PM</div></div>
-          <div class="sched-body">
-            <div class="sched-name">Mizanur Rahman</div>
-            <div class="sched-addr">Flat 3A, Dhanmondi</div>
-            <div class="sched-footer"><div class="sched-amt">৳3,500</div><span class="badge b-blue">Upcoming</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Running total -->
-    <div class="info-card" style="background:var(--green-2);border-color:var(--green-3)">
-      <div class="info-card-title" style="color:var(--green)">💰 Today's Running Total</div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">
-        <span style="color:var(--green)">Collected so far</span>
-        <span style="font-family:var(--font-m);font-weight:700;color:var(--green)">৳9,700</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">
-        <span style="color:var(--ink-3)">Remaining today</span>
-        <span style="font-family:var(--font-m);color:var(--ink-2)">৳53,700</span>
-      </div>
-    </div>
-
+    <div class="section-title" style="margin-bottom:.75rem" id="route-section-title">Today's Collections</div>
+    <div id="route-list"></div>
   </div>
 
-  <!-- ── HISTORY ── -->
-  <div id="v-history" class="view fade-in">
-    <div class="section-header" style="margin-bottom:0.875rem">
-      <div class="section-title">Collection History</div>
-      <span class="badge b-blue">This Month</span>
-    </div>
-
-    <div class="hist-card" style="margin-bottom:1rem">
-      <!-- Today -->
-      <div style="padding:8px 12px;background:var(--off);border-bottom:1px solid var(--border);font-size:10px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.08em;text-transform:uppercase">Today</div>
-      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Rashida Khanam</div><div class="hist-meta">Baridhara · 9:05 AM</div></div><div class="hist-right"><div class="hist-amt green">৳1,200</div><div class="hist-time">Collected</div></div></div>
-      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Kamal Hossain</div><div class="hist-meta">Uttara · 11:20 AM</div></div><div class="hist-right"><div class="hist-amt green">৳8,500</div><div class="hist-time">Collected</div></div></div>
-      <!-- Yesterday -->
-      <div style="padding:8px 12px;background:var(--off);border-bottom:1px solid var(--border);border-top:1px solid var(--border);font-size:10px;font-family:var(--font-m);color:var(--ink-4);letter-spacing:0.08em;text-transform:uppercase">Yesterday</div>
-      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Apex Ventures</div><div class="hist-meta">Gulshan 1 · 10:00 AM</div></div><div class="hist-right"><div class="hist-amt green">৳65,000</div><div class="hist-time">Collected</div></div></div>
-      <div class="hist-row"><div class="hist-ico hico-green">✓</div><div style="flex:1"><div class="hist-title">Nordic Residences</div><div class="hist-meta">Gulshan 2 · 2:30 PM</div></div><div class="hist-right"><div class="hist-amt green">৳18,500</div><div class="hist-time">Collected</div></div></div>
-      <div class="hist-row" style="border-bottom:none"><div class="hist-ico hico-red">✕</div><div style="flex:1"><div class="hist-title">Nadia Rahman</div><div class="hist-meta">Mohammadpur · Not home</div></div><div class="hist-right"><div class="hist-amt red">—</div><div class="hist-time">Rescheduled</div></div></div>
-    </div>
-
-    <div class="info-card">
-      <div class="info-card-title">📊 This Month Summary</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Total collections</span><span style="font-family:var(--font-m)">38</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Amount collected</span><span style="font-family:var(--font-m);color:var(--green)">৳4,82,000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Success rate</span><span style="font-family:var(--font-m);color:var(--green)">96%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--ink-3)">Rescheduled</span><span style="font-family:var(--font-m);color:var(--amber)">2</span></div>
-      </div>
+  <!-- HISTORY -->
+  <div id="v-history" class="view">
+    <div class="section-title" style="margin-bottom:.75rem">Collection History</div>
+    <div class="card">
+      <div class="cb-p" style="padding:.75rem 1.1rem" id="history-list"></div>
     </div>
   </div>
 
-  <!-- ── EARNINGS ── -->
-  <div id="v-earnings" class="view fade-in">
+  <!-- EARNINGS -->
+  <div id="v-earnings" class="view">
     <div class="earn-hero">
       <div class="earn-label">June Earnings</div>
-      <div class="earn-amount">৳<em>22</em>,000</div>
-      <div class="earn-period">Jun 1 – Jun 22 · 38 collections</div>
+      <div class="earn-amount">৳<em>14</em>,200</div>
+      <div class="earn-period">Jun 1–22 · 48 collections</div>
     </div>
-
-    <div class="earn-breakdown">
-      <div class="earn-card"><div class="earn-card-num">38</div><div class="earn-card-label">Collected</div></div>
-      <div class="earn-card"><div class="earn-card-num">96%</div><div class="earn-card-label">Success</div></div>
-      <div class="earn-card"><div class="earn-card-num">৳4.8L</div><div class="earn-card-label">Amount</div></div>
+    <div class="earn-grid">
+      <div class="ec"><div class="en">48</div><div class="el">Collected</div></div>
+      <div class="ec"><div class="en">৳4.8L</div><div class="el">Handled</div></div>
+      <div class="ec"><div class="en">100%</div><div class="el">Success</div></div>
     </div>
-
-    <div class="info-card">
-      <div class="info-card-title">💰 Earnings Breakdown</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Base salary</span><span style="font-family:var(--font-m)">৳12,000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Collection bonus</span><span style="font-family:var(--font-m)">৳7,600</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink-3)">Punctuality bonus</span><span style="font-family:var(--font-m)">৳2,400</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:8px 0"><span>Total June</span><span style="font-family:var(--font-m);color:var(--green)">৳22,000</span></div>
-      </div>
-    </div>
+    <div class="card"><div class="cb-p">
+      <div class="section-title" style="margin-bottom:.75rem">💰 Breakdown</div>
+      <div class="er"><span class="er-l">Base salary</span><span class="er-v">৳10,000</span></div>
+      <div class="er"><span class="er-l">Collection bonus</span><span class="er-v">৳3,600</span></div>
+      <div class="er"><span class="er-l">Zone bonus</span><span class="er-v">৳600</span></div>
+      <div class="er"><span class="er-l">Total June</span><span class="er-v" style="color:#1A6B47">৳14,200</span></div>
+    </div></div>
   </div>
 
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <button class="bn-item active" onclick="showView('today',this)">
-    <div class="bn-ico">📋</div>
-    <div class="bn-label">Today</div>
-    <div class="bn-dot"></div>
-  </button>
-  <button class="bn-item" onclick="showView('history',this)">
-    <div class="bn-ico">📂</div>
-    <div class="bn-label">History</div>
-  </button>
-  <button class="bn-item" onclick="showView('earnings',this)">
-    <div class="bn-ico">💰</div>
-    <div class="bn-label">Earnings</div>
-  </button>
+<!-- Bottom nav -->
+<div class="bn">
+  <button class="bni active" onclick="sv('route',this)"><div class="bni-ico">🗺️</div><div class="bni-label">Route</div></button>
+  <button class="bni" onclick="sv('history',this)"><div class="bni-ico">📂</div><div class="bni-label">History</div></button>
+  <button class="bni" onclick="sv('earnings',this)"><div class="bni-ico">💰</div><div class="bni-label">Earnings</div></button>
 </div>
 
-<!-- COLLECT CONFIRM OVERLAY -->
-<div class="overlay" id="collectOverlay">
-  <div class="overlay-card">
-    <div class="overlay-icon" style="background:var(--green-2)">💵</div>
-    <div class="overlay-title">Confirm Collection</div>
+<!-- Collect Overlay -->
+<div class="overlay" id="collect-overlay">
+  <div class="ov-card" id="collect-card"></div>
+</div>
 
-    <div class="cash-confirm-input">
-      <div class="cci-label">Amount to Confirm</div>
-      <div class="cci-value">৳2,200</div>
-      <div class="cci-note">Pest Control · Nadia Rahman · Mohammadpur</div>
-    </div>
-
-    <div class="photo-prompt">
-      <div style="font-size:22px;flex-shrink:0">📷</div>
-      <div>Take a photo of the cash or any receipt as confirmation (optional but recommended).</div>
-    </div>
-
-    <button class="btn-confirm" onclick="confirmCollection()" style="margin-bottom:8px">
-      ✓ Confirm ৳2,200 Received
-    </button>
-    <button class="btn-secondary" onclick="closeOverlay('collectOverlay')">Cancel</button>
+<!-- Reschedule Overlay -->
+<div class="overlay" id="reschedule-overlay">
+  <div class="reschedule-card">
+    <div class="ov-title" style="text-align:center;margin-bottom:.5rem">Reschedule</div>
+    <div style="font-size:13px;color:#718096;text-align:center;margin-bottom:1.1rem" id="reschedule-name"></div>
+    <div style="font-size:12px;font-weight:700;color:#0F1923;margin-bottom:5px">New Date</div>
+    <input class="fi" type="date" id="reschedule-date">
+    <div style="font-size:12px;font-weight:700;color:#0F1923;margin-bottom:5px">New Time Slot</div>
+    <select class="fsel" id="reschedule-slot">
+      <option>Morning (9am–12pm)</option>
+      <option>Afternoon (12pm–3pm)</option>
+      <option>Evening (3pm–6pm)</option>
+    </select>
+    <button class="btn-confirm" style="background:#0F1923" onclick="confirmReschedule()">Confirm Reschedule</button>
+    <button class="btn-cancel" onclick="closeOverlay('reschedule-overlay')">Cancel</button>
   </div>
 </div>
 
-<!-- SUCCESS OVERLAY -->
-<div class="overlay" id="successOverlay">
-  <div class="overlay-card">
-    <div class="overlay-icon" style="background:var(--green-2)">✓</div>
-    <div class="overlay-title">Collection Confirmed!</div>
-    <div class="overlay-amount">৳2,200</div>
-    <div class="overlay-sub">Payment confirmed and recorded. The customer's invoice has been marked as paid. Admin has been notified.</div>
-    <div class="overlay-ref">Nadia Rahman · 2:15 PM · COL-0041</div>
-    <button class="btn-confirm" onclick="closeOverlay('successOverlay')" style="margin-bottom:0">
-      Continue to Next Collection →
-    </button>
-  </div>
-</div>
-
-<!-- CANT COLLECT OVERLAY -->
-<div class="overlay" id="rescheduleOverlay">
-  <div class="overlay-card">
-    <div class="overlay-icon" style="background:var(--amber-2);font-size:24px">📅</div>
-    <div class="overlay-title">Reschedule Collection</div>
-    <div class="overlay-sub" style="margin-bottom:1rem">Can't collect right now? Let us know why and admin will reschedule with the customer.</div>
-    <div style="margin-bottom:1rem">
-      <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px">Reason</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Customer not home</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Customer requested new time</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Address not found</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="reason" style="accent-color:var(--gold-2)">Safety / other issue</label>
-      </div>
-    </div>
-    <button class="btn-confirm" onclick="closeOverlay('rescheduleOverlay')" style="background:var(--amber);margin-bottom:8px">
-      📤 Report & Move On
-    </button>
-    <button class="btn-secondary" onclick="closeOverlay('rescheduleOverlay')">Cancel</button>
+<!-- Success Overlay -->
+<div class="overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="ov-ico" style="background:#E8F5EE;margin:0 auto .875rem">✅</div>
+    <div class="ov-title">Collection Confirmed!</div>
+    <div class="ov-sub" id="success-sub">Payment received and recorded.</div>
+    <div class="ov-detail" id="success-detail"></div>
+    <button class="btn-confirm" onclick="closeOverlay('success-overlay');renderRoute()">Back to Route</button>
   </div>
 </div>
 
 <script>
-function showView(name,el){
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  document.getElementById('v-'+name).classList.add('active');
-  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active')});
-  if(el)el.classList.add('active');
-  window.scrollTo(0,0);
+const user = SS.requireAuth('collector');
+if (!user) throw new Error('Not authenticated');
+SS.seedIfEmpty();
+
+document.getElementById('topbar-mount').innerHTML = SS.renderTopbar(user, 'Collector App', 0);
+
+let currentColId = null;
+
+const views = ['route', 'history', 'earnings'];
+function sv(name, el) {
+  views.forEach(v => document.getElementById('v-' + v)?.classList.remove('active'));
+  document.getElementById('v-' + name)?.classList.add('active');
+  document.querySelectorAll('.bni').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (name === 'route') renderRoute();
+  if (name === 'history') renderHistory();
+  window.scrollTo(0, 0);
 }
-function showCollectOverlay(){
-  document.getElementById('collectOverlay').classList.add('show');
+
+function renderRoute() {
+  const cols = SS.getCollections().filter(c => c.collectorId === user.id || !c.collectorId);
+  const pending = cols.filter(c => c.status === 'scheduled');
+  const done = cols.filter(c => c.status === 'collected');
+  const total = pending.reduce((a, c) => a + c.amount, 0);
+
+  document.getElementById('route-count').textContent = cols.length;
+  document.getElementById('h-stops').textContent = cols.length;
+  document.getElementById('h-amount').textContent = SS.fmt(total).replace('৳', '');
+  document.getElementById('h-done').textContent = done.length;
+  document.getElementById('route-section-title').textContent = pending.length > 0
+    ? `${pending.length} stop${pending.length !== 1 ? 's' : ''} remaining`
+    : 'All collections done today 🎉';
+
+  if (cols.length === 0) {
+    document.getElementById('route-list').innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem">
+        <div style="font-size:3rem;margin-bottom:.75rem">📭</div>
+        <div style="font-family:'Fraunces',serif;font-size:1.2rem;color:#0F1923;margin-bottom:5px">No collections scheduled</div>
+        <div style="font-size:13px;color:#718096">Your route is clear for today. Check back later.</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('route-list').innerHTML = [...pending, ...done].map((c, i) => `
+    <div class="route-card" style="${c.status === 'collected' ? 'opacity:.6' : ''}">
+      <div class="rc-head">
+        <div class="rc-num" style="${c.status === 'collected' ? 'background:#1A6B47' : ''}">${c.status === 'collected' ? '✓' : (i + 1)}</div>
+        <div style="flex:1">
+          <div class="rc-name">${c.customerName}</div>
+          <div class="rc-addr">${c.address}</div>
+        </div>
+        ${SS.badge(c.slot || 'Morning', '#C27B2A', '#FFF3E0')}
+      </div>
+      <div class="rc-body">
+        <div class="rc-row"><span class="rc-icon">📋</span><span>${c.invoiceId} · Invoice</span></div>
+        <div class="rc-row"><span class="rc-icon">📱</span><span>Contact: 01711-XXXXXX</span></div>
+        <div class="rc-amount">${SS.fmt(c.amount)}</div>
+        <div class="rc-inv">${c.invoiceId} · Scheduled: ${c.date}</div>
+        ${c.status === 'collected'
+          ? `<div style="padding:.875rem;background:#E8F5EE;border-radius:10px;font-size:13px;color:#1A6B47;font-weight:600;text-align:center">✓ Collected via ${c.paidVia || 'Cash'}</div>`
+          : `<div class="btn-row">
+              <button class="btn-nav" onclick="event.stopPropagation();openMaps('${c.address}')">🗺 Navigate</button>
+              <button class="btn-collect" onclick="openCollect('${c.id}')">Collect ${SS.fmt(c.amount)}</button>
+            </div>
+            <button class="btn-reschedule" style="width:100%;margin-top:7px" onclick="openReschedule('${c.id}','${c.customerName}')">Reschedule</button>`
+        }
+      </div>
+    </div>`).join('');
 }
-function confirmCollection(){
-  document.getElementById('collectOverlay').classList.remove('show');
-  setTimeout(function(){document.getElementById('successOverlay').classList.add('show');},200);
+
+function openCollect(colId) {
+  currentColId = colId;
+  const cols = SS.getCollections();
+  const col = cols.find(c => c.id === colId);
+  if (!col) return;
+
+  document.getElementById('collect-card').innerHTML = `
+    <div class="ov-ico" style="background:#FFF3E0">💵</div>
+    <div class="ov-title">Collect Payment</div>
+    <div class="ov-sub">Confirm receipt from <strong>${col.customerName}</strong></div>
+    <div class="ov-detail">
+      <div class="od-row"><span class="od-l">Customer</span><span class="od-v" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700">${col.customerName}</span></div>
+      <div class="od-row"><span class="od-l">Address</span><span class="od-v" style="font-family:'Plus Jakarta Sans',sans-serif">${col.address}</span></div>
+      <div class="od-row"><span class="od-l">Invoice</span><span class="od-v">${col.invoiceId}</span></div>
+      <div class="od-row"><span class="od-l">Amount</span><span class="od-v" style="color:#0F1923;font-size:1.1rem">${SS.fmt(col.amount)}</span></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#0F1923;margin-bottom:.625rem">Payment method received</div>
+    <div class="pay-methods">
+      <div class="pm selected" onclick="selPm(this)"><span class="pm-icon">💵</span><div><div class="pm-name">Cash</div></div></div>
+      <div class="pm" onclick="selPm(this)"><span class="pm-icon">💚</span><div><div class="pm-name">bKash</div></div></div>
+      <div class="pm" onclick="selPm(this)"><span class="pm-icon">🔵</span><div><div class="pm-name">Nagad</div></div></div>
+      <div class="pm" onclick="selPm(this)"><span class="pm-icon">📱</span><div><div class="pm-name">Other</div></div></div>
+    </div>
+    <button class="btn-confirm" onclick="confirmCollection()">✓ Confirm Collection</button>
+    <button class="btn-cancel" onclick="closeOverlay('collect-overlay')">Cancel</button>`;
+
+  document.getElementById('collect-overlay').classList.add('show');
 }
-function showCantCollect(){
-  document.getElementById('rescheduleOverlay').classList.add('show');
+
+function selPm(el) {
+  document.querySelectorAll('#collect-card .pm').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
 }
-function closeOverlay(id){
+
+function confirmCollection() {
+  const cols = SS.getCollections();
+  const col = cols.find(c => c.id === currentColId);
+  if (!col) return;
+
+  const pmEl = document.querySelector('#collect-card .pm.selected .pm-name');
+  const method = pmEl ? pmEl.textContent : 'Cash';
+
+  col.status = 'collected';
+  col.paidVia = method;
+  col.collectedAt = Date.now();
+  SS.saveCollections(cols);
+
+  // Mark invoice as paid
+  const invs = SS.getInvoices();
+  const inv = invs.find(i => i.id === col.invoiceId);
+  if (inv) { inv.status = 'paid'; inv.paidVia = method; SS.saveInvoices(invs); }
+
+  // Show success
+  document.getElementById('collect-overlay').classList.remove('show');
+  document.getElementById('success-sub').textContent = `${SS.fmt(col.amount)} collected from ${col.customerName} via ${method}.`;
+  document.getElementById('success-detail').innerHTML = `
+    <div class="od-row"><span class="od-l">Customer</span><span class="od-v" style="font-family:'Plus Jakarta Sans',sans-serif">${col.customerName}</span></div>
+    <div class="od-row"><span class="od-l">Amount</span><span class="od-v">${SS.fmt(col.amount)}</span></div>
+    <div class="od-row"><span class="od-l">Method</span><span class="od-v">${method}</span></div>
+    <div class="od-row"><span class="od-l">Invoice</span><span class="od-v">${col.invoiceId}</span></div>`;
+  document.getElementById('success-overlay').classList.add('show');
+}
+
+function openReschedule(colId, name) {
+  currentColId = colId;
+  document.getElementById('reschedule-name').textContent = name;
+  document.getElementById('reschedule-date').min = new Date().toISOString().split('T')[0];
+  document.getElementById('reschedule-date').value = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('reschedule-overlay').classList.add('show');
+}
+
+function confirmReschedule() {
+  const cols = SS.getCollections();
+  const col = cols.find(c => c.id === currentColId);
+  if (col) {
+    col.date = document.getElementById('reschedule-date').value;
+    col.slot = document.getElementById('reschedule-slot').value.split(' ')[0];
+    SS.saveCollections(cols);
+  }
+  closeOverlay('reschedule-overlay');
+  renderRoute();
+  alert('Rescheduled! Customer and admin have been notified.');
+}
+
+function renderHistory() {
+  const cols = SS.getCollections().filter(c => c.status === 'collected');
+  document.getElementById('history-list').innerHTML = cols.length === 0
+    ? '<div style="text-align:center;padding:1.5rem;color:#718096;font-size:13px">No collections recorded yet</div>'
+    : cols.map(c => `
+      <div class="hist-row">
+        <div class="hav">${c.customerName.split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
+        <div style="flex:1">
+          <div class="hn">${c.customerName}</div>
+          <div class="hm">${c.address?.split(',')[0]} · ${c.paidVia || 'Cash'}</div>
+        </div>
+        <div class="ha">${SS.fmt(c.amount)}</div>
+      </div>`).join('');
+}
+
+function openMaps(address) {
+  const q = encodeURIComponent(address + ', Dhaka, Bangladesh');
+  window.open('https://maps.google.com/?q=' + q, '_blank');
+}
+
+function refreshRoute() {
+  renderRoute();
+}
+
+function closeOverlay(id) {
   document.getElementById(id).classList.remove('show');
 }
+
+renderRoute();
+SS.renderNotifs(SS.getCollections(), user);
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('#ss-user-menu') && !e.target.closest('[onclick*="toggleUserMenu"]') && !e.target.closest('#ss-notif-panel')) {
+    const m = document.getElementById('ss-user-menu'), n = document.getElementById('ss-notif-panel');
+    if (m) m.style.display = 'none';
+    if (n) n.style.display = 'none';
+  }
+});
 </script>
 </body>
 </html>
